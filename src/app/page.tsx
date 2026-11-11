@@ -1,109 +1,108 @@
 import Link from "next/link";
+import { HeroRotate } from "@/components/HeroRotate";
+
+const HERO = ["/hero-1.jpg", "/hero-2.jpg", "/hero-3.jpg"] as const;
+const TILES = [
+  "/tile-1.jpg",
+  "/tile-2.jpg",
+  "/tile-3.jpg",
+  "/tile-4.jpg",
+  "/tile-5.jpg",
+  "/tile-6.jpg",
+] as const;
 
 export default function HomePage() {
   return (
-    <main>
-      <header
-        className="shell"
-        style={{
-          padding: "1.4rem 0",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
-            fontSize: "1.35rem",
-            letterSpacing: "-0.03em",
-          }}
-        >
-          Dropmai
-        </div>
-        <nav style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <Link href="/entrar" className="btn btn-ghost">
+    <div className="landing">
+      <header className="shell nav">
+        <Link href="/" className="wordmark" aria-label="dropmai">
+          dropmai
+        </Link>
+        <div className="nav-actions">
+          <Link href="/entrar" className="btn btn-text">
             Entrar
           </Link>
-          <Link href="/painel" className="btn btn-primary">
-            Abrir painel
+          <Link href="/painel/lojas/nova" className="btn btn-solid btn-nav">
+            Criar loja
           </Link>
-        </nav>
+        </div>
       </header>
 
-      <section
-        className="shell fade-up"
-        style={{
-          padding: "4.5rem 0 3rem",
-          display: "grid",
-          gap: "1.25rem",
-          maxWidth: 720,
-        }}
-      >
-        <p
-          className="muted"
-          style={{
-            margin: 0,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            fontSize: "0.78rem",
-          }}
-        >
-          Plataforma de dropshipping
-        </p>
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2.8rem, 8vw, 5.2rem)",
-            lineHeight: 0.95,
-            letterSpacing: "-0.04em",
-            fontWeight: 700,
-          }}
-        >
-          Dropmai
-        </h1>
-        <p
-          className="muted"
-          style={{ margin: 0, fontSize: "1.2rem", maxWidth: "34ch" }}
-        >
-          Crie sua loja em minutos, use produtos Xnamai e venda no seu domínio —
-          e depois no Mercado Livre, Shopee e Amazon.
-        </p>
-        <div
-          style={{
-            display: "flex",
-            gap: "0.75rem",
-            flexWrap: "wrap",
-            marginTop: "0.5rem",
-          }}
-        >
-          <Link href="/painel/lojas/nova" className="btn btn-primary">
-            Criar minha loja
-          </Link>
-          <Link href="/loja/minhaloja" className="btn btn-ghost">
-            Ver vitrine demo
-          </Link>
+      <section className="hero" aria-label="Hero Dropmai">
+        <div className="hero-media" aria-hidden>
+          {HERO.map((src) => (
+            <div className="hero-slide" key={src}>
+              <img src={src} alt="" width={1920} height={1080} />
+            </div>
+          ))}
+          <div className="hero-overlay" />
+        </div>
+
+        <div className="shell hero-copy">
+          <p className="hero-brand wordmark rise">dropmai</p>
+          <h1 className="hero-kicker rise rise-d1">
+            <span className="hero-line">Sua loja pode ser</span>
+            <HeroRotate />
+          </h1>
+          <p className="hero-sub rise rise-d2">
+            Catálogo Xnamai na vitrine, subdomínio ou domínio seu — marketplaces
+            quando você quiser.
+          </p>
+          <div className="hero-cta rise rise-d3">
+            <Link href="/painel/lojas/nova" className="btn btn-solid">
+              Criar minha loja
+            </Link>
+            <Link href="/loja/minhaloja" className="btn btn-outline">
+              Ver vitrine demo
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="shell" style={{ paddingBottom: "4rem" }}>
-        <div
-          className="panel drift"
-          style={{ padding: "1.5rem", display: "grid", gap: "0.75rem" }}
-        >
-          <strong
-            style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem" }}
-          >
-            minhaloja.dropmai.com.br
-          </strong>
-          <p className="muted" style={{ margin: 0 }}>
-            Frontend Next.js + Backend NestJS separados. Catálogo inicial:
-            fornecedor <strong>Xnamai</strong>.
-          </p>
+      <section className="mosaic-section">
+        <div className="shell">
+          <div className="mosaic-head">
+            <h2>Lojas no ar. Estoque com o fornecedor.</h2>
+            <p>
+              Dropshipping com clareza: sua marca na frente, Xnamai no catálogo,
+              marketplaces quando fizer sentido.
+            </p>
+          </div>
+          <div className="mosaic" aria-hidden>
+            {TILES.map((src, i) => (
+              <div className={`tile tile-${i + 1}`} key={src}>
+                <img src={src} alt="" width={800} height={1000} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-    </main>
+
+      <section className="proof">
+        <div className="shell proof-grid">
+          <div className="proof-item">
+            <strong>Loja própria</strong>
+            <p>
+              Subdomínio <em>minhaloja.dropmai.com.br</em> ou domínio customizado.
+            </p>
+          </div>
+          <div className="proof-item">
+            <strong>Catálogo Xnamai</strong>
+            <p>Importe produtos do fornecedor e publique na vitrine com markup.</p>
+          </div>
+          <div className="proof-item">
+            <strong>Marketplaces depois</strong>
+            <p>Site primeiro. Depois Mercado Livre, Shopee e Amazon.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="shell">
+          <span className="wordmark">dropmai</span>
+          <p>Loja própria · Xnamai · marketplaces</p>
+        </div>
+      </footer>
+    </div>
   );
 }

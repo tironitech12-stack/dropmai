@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Serif_4 } from "next/font/google";
+import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const display = Fraunces({
+const display = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const body = Source_Serif_4({
+const body = Outfit({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Dropmai — sua loja, seu domínio, seus marketplaces",
+  title: "dropmai — loja própria sem estoque",
   description:
-    "Crie sua loja Dropmai, publique produtos Xnamai e venda no site e nos marketplaces.",
+    "Crie sua loja Dropmai com catálogo Xnamai, subdomínio ou domínio próprio, e venda depois nos marketplaces.",
 };
 
 export default function RootLayout({
