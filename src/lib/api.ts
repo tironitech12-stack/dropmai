@@ -1,9 +1,22 @@
-const API_URL = (
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
-).replace(/\/$/, "");
+function resolveApiUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
+
+  // Never bake localhost into production / Vercel builds
+  if (process.env.NODE_ENV !== "production") {
+    return "http://localhost:4000";
+  }
+  return "";
+}
+
+const API_URL = resolveApiUrl();
 
 export function getApiUrl() {
   return API_URL;
+}
+
+export function isApiConfigured() {
+  return Boolean(API_URL);
 }
 
 type FetchOptions = RequestInit & {
@@ -16,6 +29,12 @@ export async function apiFetch<T = unknown>(
   path: string,
   options: FetchOptions = {},
 ): Promise<T> {
+  if (!API_URL) {
+    throw new Error(
+      "NEXT_PUBLIC_API_URL não configurada. Defina a URL do Dropmai_Backend no Vercel.",
+    );
+  }
+
   const headers = new Headers(options.headers);
   if (options.json !== undefined) {
     headers.set("Content-Type", "application/json");

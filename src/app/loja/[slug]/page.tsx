@@ -34,7 +34,7 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
             : "Lookup stub — verifique DNS/CNAME e status VERIFIED no backend."}
         </p>
         <p className="muted">
-          API: <code>{getApiUrl()}</code>
+          API: <code>{getApiUrl() || "(NEXT_PUBLIC_API_URL não definida)"}</code>
         </p>
       </main>
     );

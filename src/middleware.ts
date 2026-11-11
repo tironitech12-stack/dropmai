@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { extractSubdomainSlug, isLikelyCustomDomain } from "@/lib/subdomain";
+import {
+  extractSubdomainSlug,
+  isLikelyCustomDomain,
+  isPlatformHost,
+} from "@/lib/subdomain";
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host");
@@ -11,6 +15,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/loja/") ||
     pathname.includes(".")
   ) {
+    return NextResponse.next();
+  }
+
+  // Vercel / localhost / apex → marketing landing & seller app as-is
+  if (isPlatformHost(host)) {
     return NextResponse.next();
   }
 

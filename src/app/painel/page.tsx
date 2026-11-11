@@ -31,8 +31,10 @@ export default async function PainelPage() {
 
       {error ? (
         <p className="panel" style={{ padding: "1rem", color: "#9b2c2c" }}>
-          {error}. Confirme que o backend está em{" "}
-          <code>{process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}</code>.
+          {error}.{" "}
+          {process.env.NEXT_PUBLIC_API_URL
+            ? <>Confirme o backend em <code>{process.env.NEXT_PUBLIC_API_URL}</code>.</>
+            : <>Defina <code>NEXT_PUBLIC_API_URL</code> no ambiente (Vercel).</>}
         </p>
       ) : null}
 
