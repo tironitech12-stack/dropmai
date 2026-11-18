@@ -265,6 +265,8 @@ function ProductThumb({ product }: { product: CatalogProduct }) {
         className="xn-thumb"
         width={160}
         height={160}
+        loading="lazy"
+        referrerPolicy="no-referrer"
       />
     );
   }
