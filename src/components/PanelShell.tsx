@@ -46,6 +46,9 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [fornecedoresOpen, setFornecedoresOpen] = useState(
+    pathname.startsWith("/painel/fornecedores"),
+  );
   const searchRef = useRef<HTMLInputElement>(null);
 
   const channelNav: NavItem[] = useMemo(
@@ -79,6 +82,9 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
 
   useEffect(() => {
     setOpen(false);
+    if (pathname.startsWith("/painel/fornecedores")) {
+      setFornecedoresOpen(true);
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -123,6 +129,11 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
   const filteredPrimary = PRIMARY_NAV.filter((i) => matchesQuery(i.label));
   const filteredChannels = channelNav.filter((i) => matchesQuery(i.label));
   const filteredApps = appsNav.filter((i) => matchesQuery(i.label));
+  const showFornecedores =
+    !query.trim() ||
+    "fornecedores".includes(query.trim().toLowerCase()) ||
+    "xnamai".includes(query.trim().toLowerCase());
+  const xnamaiActive = pathname.startsWith("/painel/fornecedores/xnamai");
   const showSettings =
     !query.trim() || "configurações".includes(query.trim().toLowerCase());
 
@@ -152,6 +163,31 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
             <NavLink key={item.href} item={item} active={isActive(item)} />
           ))}
         </nav>
+
+        {showFornecedores ? (
+          <div className="panel-nav-section">
+            <button
+              type="button"
+              className={`panel-nav-section-toggle${fornecedoresOpen || xnamaiActive ? " is-open" : ""}`}
+              aria-expanded={fornecedoresOpen || xnamaiActive}
+              onClick={() => setFornecedoresOpen((v) => !v)}
+            >
+              <span>Fornecedores</span>
+              <IconChevron className="panel-nav-chevron" />
+            </button>
+            {(fornecedoresOpen || xnamaiActive || Boolean(query.trim())) && (
+              <nav className="panel-nav" aria-label="Fornecedores">
+                <Link
+                  href="/painel/fornecedores/xnamai"
+                  className={`panel-nav-link panel-nav-sub${xnamaiActive ? " is-active" : ""}`}
+                >
+                  <IconTruck />
+                  <span>Xnamai</span>
+                </Link>
+              </nav>
+            )}
+          </div>
+        ) : null}
 
         {(filteredChannels.length > 0 || !query.trim()) && (
           <div className="panel-nav-section">
@@ -588,6 +624,35 @@ function IconSearch(props: SVGProps<SVGSVGElement>) {
         stroke="currentColor"
         strokeWidth="1.7"
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconTruck(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...iconProps(props)}>
+      <path
+        d="M3 7.5h11.5V16H3V7.5Zm11.5 2.5H19l2 3v3h-6.5V10Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <circle cx="7" cy="17.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="16.5" cy="17.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function IconChevron(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...iconProps(props)} width={14} height={14} className={props.className}>
+      <path
+        d="m5 4.5 4.5 3.5L5 11.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

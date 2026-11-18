@@ -909,6 +909,61 @@ textarea.field-input:-webkit-autofill:focus {
   color: rgba(244, 247, 250, 0.42);
 }
 
+.panel-nav-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0.15rem 0 0.1rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  background: transparent;
+  color: rgba(244, 247, 250, 0.42);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.panel-nav-section-toggle:hover {
+  color: rgba(244, 247, 250, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.panel-nav-chevron {
+  transition: transform 140ms ease;
+  opacity: 0.7;
+}
+
+.panel-nav-section-toggle.is-open .panel-nav-chevron {
+  transform: rotate(90deg);
+}
+
+.panel-nav-sub {
+  padding-left: 0.85rem;
+}
+
+.panel-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  background: #eef2f5;
+}
+
+.panel-thumb-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #445362;
+  background: #e4e9ee;
+}
+
 .panel-nav-link {
   display: flex;
   align-items: center;
