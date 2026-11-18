@@ -92,6 +92,15 @@ export function XnamaiProductThumb({ product }: Props) {
       onError={() => {
         if (triedForce) return;
         setTriedForce(true);
+        // Never replace a working CDN URL with the proxy (proxy 404s for many IDs).
+        // Only force-retry the Dropmai proxy when the original src was already a proxy.
+        const isCdn =
+          /arquivos\.mercos\.com|thumbnails\.meuspedidos\.com\.br/i.test(src);
+        if (isCdn) {
+          const bust = src.includes("?") ? "&" : "?";
+          setSrc(`${src}${bust}_dm=${Date.now()}`);
+          return;
+        }
         setSrc(
           buildProxyUrl(product.externalId || product.id, {
             sku: product.sku,
