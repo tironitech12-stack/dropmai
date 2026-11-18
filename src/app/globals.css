@@ -968,6 +968,124 @@ textarea.field-input:-webkit-autofill:focus {
   background: #e4e9ee;
 }
 
+.xn-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.xn-toolbar .field-input {
+  flex: 1 1 220px;
+  min-width: 180px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.xn-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.xn-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--panel-line);
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--panel-ink);
+}
+
+.xn-cat span {
+  color: var(--panel-mute);
+  font-weight: 500;
+}
+
+.xn-cat.is-active {
+  background: #e7f6f1;
+  border-color: rgba(15, 138, 107, 0.35);
+  color: var(--panel-accent-deep);
+}
+
+.xn-featured-grid,
+.xn-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.xn-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border-radius: 14px;
+  border: 1px solid var(--panel-line);
+  background: #fff;
+}
+
+.xn-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #eef2f5;
+  display: block;
+}
+
+.xn-thumb-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3d5568;
+  background:
+    linear-gradient(145deg, #d9e7f2, #eef2f5 55%, #dce8df);
+}
+
+.xn-card-body {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.xn-card-body strong {
+  font-size: 0.92rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.xn-meta {
+  color: var(--panel-mute);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.xn-price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.xn-stock {
+  color: var(--panel-accent-deep);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.xn-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
 .panel-nav-link {
   display: flex;
   align-items: center;
