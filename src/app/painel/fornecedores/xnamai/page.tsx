@@ -56,7 +56,7 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
   const qs = new URLSearchParams();
   qs.set("inStock", inStock ? "true" : "false");
   qs.set("page", String(page));
-  qs.set("pageSize", "48");
+  qs.set("pageSize", "24");
   if (categoryId) qs.set("categoryId", categoryId);
   if (q) qs.set("q", q);
 

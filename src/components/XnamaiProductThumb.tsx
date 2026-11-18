@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getApiUrl } from "@/lib/api";
 
 type Props = {
@@ -26,11 +26,19 @@ function buildProxyUrl(
   return `${api.replace(/\/$/, "")}/api/v1/suppliers/xnamai/products/${encodeURIComponent(productId)}/image${suffix}`;
 }
 
+function initialsFor(title: string) {
+  const cleaned = title.replace(/^pr[eé]\s*cadastro\s*/i, "").trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (!parts.length) return "X";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+}
+
 /** Fix localhost / relative proxy URLs baked by a misconfigured PUBLIC_API_URL. */
 export function sanitizeProductImageUrl(
   imageUrl: string | null | undefined,
   product: { externalId: string; id: string; sku: string | null; title: string },
-): string {
+): string | null {
   const raw = (imageUrl ?? "").trim();
   const productId = product.externalId || product.id;
 
@@ -46,7 +54,6 @@ export function sanitizeProductImageUrl(
     return buildProxyUrl(productId, { sku: product.sku, title: product.title });
   }
 
-  // Absolute proxy on wrong host → rebuild against configured API
   if (raw.includes("/suppliers/xnamai/products/") && raw.includes("/image")) {
     try {
       const u = new URL(raw);
@@ -76,8 +83,29 @@ export function XnamaiProductThumb({ product }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [product.imageUrl, product.externalId, product.id, product.sku, product.title],
   );
-  const [src, setSrc] = useState(initial);
+  const [src, setSrc] = useState<string | null>(initial);
+  const [phase, setPhase] = useState<"img" | "fallback">(
+    initial ? "img" : "fallback",
+  );
   const [triedForce, setTriedForce] = useState(false);
+
+  useEffect(() => {
+    setSrc(initial);
+    setPhase(initial ? "img" : "fallback");
+    setTriedForce(false);
+  }, [initial]);
+
+  if (phase === "fallback" || !src) {
+    return (
+      <div
+        className="xn-thumb xn-thumb-fallback"
+        aria-hidden
+        title={product.title}
+      >
+        {initialsFor(product.title)}
+      </div>
+    );
+  }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -88,26 +116,30 @@ export function XnamaiProductThumb({ product }: Props) {
       width={160}
       height={160}
       loading="lazy"
+      decoding="async"
       referrerPolicy="no-referrer"
       onError={() => {
-        if (triedForce) return;
-        setTriedForce(true);
-        // Never replace a working CDN URL with the proxy (proxy 404s for many IDs).
-        // Only force-retry the Dropmai proxy when the original src was already a proxy.
         const isCdn =
           /arquivos\.mercos\.com|thumbnails\.meuspedidos\.com\.br/i.test(src);
-        if (isCdn) {
+        if (isCdn && !triedForce) {
+          setTriedForce(true);
           const bust = src.includes("?") ? "&" : "?";
           setSrc(`${src}${bust}_dm=${Date.now()}`);
           return;
         }
-        setSrc(
-          buildProxyUrl(product.externalId || product.id, {
-            sku: product.sku,
-            title: product.title,
-            force: true,
-          }),
-        );
+        if (!isCdn && !triedForce) {
+          setTriedForce(true);
+          setSrc(
+            buildProxyUrl(product.externalId || product.id, {
+              sku: product.sku,
+              title: product.title,
+              force: true,
+            }),
+          );
+          return;
+        }
+        // Final: solid fallback — never leave a broken <img> icon.
+        setPhase("fallback");
       }}
     />
   );
