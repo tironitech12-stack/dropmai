@@ -25,6 +25,18 @@ type FetchOptions = RequestInit & {
   cookieHeader?: string;
 };
 
+/** Browser-only: read mirrored dropmai_session from the frontend host. */
+function readMirroredSessionToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)dropmai_session=([^;]*)/);
+  if (!match?.[1]) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   options: FetchOptions = {},
@@ -41,6 +53,22 @@ export async function apiFetch<T = unknown>(
   }
   if (options.cookieHeader) {
     headers.set("cookie", options.cookieHeader);
+  }
+
+  // Cross-origin (Vercel → Render): browser won't send the mirrored frontend
+  // cookie to the API host. Forward the signed dm1 token via X-Dropmai-User
+  // (AuthGuard already accepts it) so client panel calls match SSR auth.
+  if (
+    typeof window !== "undefined" &&
+    !headers.has("x-dropmai-user") &&
+    !headers.has("authorization") &&
+    !options.cookieHeader
+  ) {
+    const mirrored = readMirroredSessionToken();
+    if (mirrored?.startsWith("dm1.")) {
+      headers.set("x-dropmai-user", mirrored);
+      headers.set("authorization", `Bearer ${mirrored}`);
+    }
   }
 
   const res = await fetch(`${API_URL}${path}`, {

@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetchServer } from "@/lib/api-server";
 
 type SupplierProductRow = {
   id: string;
@@ -23,39 +20,23 @@ type ListResponse = {
   total: number;
 };
 
-export default function FornecedorXnamaiPage() {
-  const [products, setProducts] = useState<SupplierProductRow[]>([]);
-  const [meta, setMeta] = useState<{ mode?: string; source?: string }>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function FornecedorXnamaiPage() {
+  let products: SupplierProductRow[] = [];
+  let meta: { mode?: string; source?: string } = {};
+  let error: string | null = null;
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await apiFetch<ListResponse>(
-          "/api/v1/suppliers/xnamai/products?inStock=true",
-        );
-        if (cancelled) return;
-        setProducts(data.products ?? []);
-        setMeta({ mode: data.mode, source: data.source });
-      } catch (err) {
-        if (cancelled) return;
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Não foi possível carregar o catálogo Xnamai",
-        );
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  try {
+    const data = await apiFetchServer<ListResponse>(
+      "/api/v1/suppliers/xnamai/products?inStock=true",
+    );
+    products = data.products ?? [];
+    meta = { mode: data.mode, source: data.source };
+  } catch (err) {
+    error =
+      err instanceof Error
+        ? err.message
+        : "Não foi possível carregar o catálogo Xnamai";
+  }
 
   return (
     <main className="panel-page">
@@ -71,11 +52,7 @@ export default function FornecedorXnamaiPage() {
 
       {error ? <p className="panel-alert">{error}</p> : null}
 
-      {loading ? (
-        <p className="panel-muted-note">Carregando produtos com estoque…</p>
-      ) : null}
-
-      {!loading && !error && products.length === 0 ? (
+      {!error && products.length === 0 ? (
         <div className="panel-empty">
           <h3>Nenhum produto com estoque</h3>
           <p>
@@ -85,7 +62,7 @@ export default function FornecedorXnamaiPage() {
         </div>
       ) : null}
 
-      {!loading && products.length > 0 ? (
+      {products.length > 0 ? (
         <>
           <p className="panel-muted-note">
             {products.length} produto{products.length === 1 ? "" : "s"} com
@@ -118,7 +95,10 @@ export default function FornecedorXnamaiPage() {
                           height={40}
                         />
                       ) : (
-                        <span className="panel-thumb panel-thumb-fallback" aria-hidden>
+                        <span
+                          className="panel-thumb panel-thumb-fallback"
+                          aria-hidden
+                        >
                           {p.title.slice(0, 1).toUpperCase()}
                         </span>
                       )}
