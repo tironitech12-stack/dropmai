@@ -256,24 +256,22 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
 }
 
 function ProductThumb({ product }: { product: CatalogProduct }) {
-  if (product.imageUrl) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={product.imageUrl}
-        alt=""
-        className="xn-thumb"
-        width={160}
-        height={160}
-        loading="lazy"
-        referrerPolicy="no-referrer"
-      />
-    );
+  // Backend always supplies CDN or Dropmai image-proxy URL — never letter placeholders.
+  const src = product.imageUrl;
+  if (!src) {
+    return <span className="xn-thumb xn-thumb-fallback" aria-hidden />;
   }
   return (
-    <span className="xn-thumb xn-thumb-fallback" aria-hidden>
-      {product.title.slice(0, 1).toUpperCase()}
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      className="xn-thumb"
+      width={160}
+      height={160}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+    />
   );
 }
 
