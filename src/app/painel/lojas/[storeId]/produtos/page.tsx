@@ -60,61 +60,41 @@ export default function StoreProductsPage() {
   }
 
   return (
-    <main className="fade-up">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
+    <main className="panel-page">
+      <div className="panel-page-head">
         <div>
-          <Link href="/painel" className="muted">
-            ← Lojas
-          </Link>
-          <h1
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "2.1rem",
-              margin: "0.4rem 0",
-            }}
-          >
-            Catálogo da loja
-          </h1>
-          <p className="muted" style={{ marginTop: 0 }}>
-            Fornecedor #1: Xnamai. {mode ? `Fonte atual: ${mode}.` : null}
+          <p className="panel-eyebrow">
+            <Link href="/painel/lojas" className="panel-text-link">
+              ← Lojas
+            </Link>
+          </p>
+          <h1>Catálogo da loja</h1>
+          <p className="panel-lead">
+            Fornecedor #1: Xnamai.
+            {mode ? ` Fonte atual: ${mode}.` : null}
           </p>
         </div>
-        <button className="btn btn-primary" onClick={runSync} disabled={syncing}>
-          {syncing ? "Sincronizando…" : "Sincronizar Xnamai"}
-        </button>
+        <div className="panel-head-actions">
+          <button
+            className="btn btn-primary"
+            onClick={runSync}
+            disabled={syncing}
+            type="button"
+          >
+            {syncing ? "Sincronizando…" : "Sincronizar Xnamai"}
+          </button>
+        </div>
       </div>
 
-      {syncInfo ? (
-        <p className="panel" style={{ padding: "0.85rem 1rem" }}>
-          {syncInfo}
-        </p>
-      ) : null}
+      {syncInfo ? <p className="panel-info">{syncInfo}</p> : null}
 
       {loading ? (
-        <p className="muted">Carregando produtos…</p>
+        <p className="panel-muted-note">Carregando produtos…</p>
       ) : (
-        <div className="panel" style={{ overflow: "auto" }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              fontSize: "0.95rem",
-            }}
-          >
+        <div className="panel-table-wrap">
+          <table className="panel-table">
             <thead>
-              <tr
-                style={{
-                  textAlign: "left",
-                  borderBottom: "1px solid var(--line)",
-                }}
-              >
+              <tr>
                 <th style={th}>SKU</th>
                 <th style={th}>Produto</th>
                 <th style={th}>Custo</th>
@@ -125,14 +105,12 @@ export default function StoreProductsPage() {
             </thead>
             <tbody>
               {products.map((p) => (
-                <tr key={p.id} style={{ borderBottom: "1px solid var(--line)" }}>
+                <tr key={p.id}>
                   <td style={td}>{p.sku || p.externalId || p.id}</td>
                   <td style={td}>
                     <div>{p.title}</div>
                     {p.categoryName ? (
-                      <div className="muted" style={{ fontSize: "0.85rem" }}>
-                        {p.categoryName}
-                      </div>
+                      <div className="panel-table-sub">{p.categoryName}</div>
                     ) : null}
                   </td>
                   <td style={td}>
@@ -152,13 +130,16 @@ export default function StoreProductsPage() {
             </tbody>
           </table>
           {products.length === 0 ? (
-            <p className="muted" style={{ padding: "1rem" }}>
-              Nenhum produto. Clique em sincronizar para importar o mock Xnamai.
-            </p>
+            <div className="panel-empty panel-empty-inset">
+              <h3>Nenhum produto</h3>
+              <p>
+                Clique em sincronizar para importar o mock Xnamai nesta loja.
+              </p>
+            </div>
           ) : null}
         </div>
       )}
-      <p className="muted" style={{ fontSize: "0.85rem" }}>
+      <p className="panel-muted-note">
         * Markup padrão 35% sobre o custo do fornecedor.
       </p>
     </main>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
@@ -42,32 +43,33 @@ export default function NovaLojaPage() {
   }
 
   return (
-    <main className="fade-up" style={{ maxWidth: 560 }}>
-      <h1
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "2.2rem",
-          marginBottom: 8,
-        }}
-      >
-        Nova loja
-      </h1>
-      <p className="muted">O slug vira o subdomínio da vitrine.</p>
-      <form
-        className="panel"
-        onSubmit={onSubmit}
-        style={{ padding: "1.25rem", display: "grid", gap: "0.85rem" }}
-      >
-        <label style={{ display: "grid", gap: 6 }}>
+    <main className="panel-page">
+      <div className="panel-page-head">
+        <div>
+          <p className="panel-eyebrow">
+            <Link href="/painel/lojas" className="panel-text-link">
+              ← Lojas
+            </Link>
+          </p>
+          <h1>Nova loja</h1>
+          <p className="panel-lead">
+            O slug vira o subdomínio da vitrine Dropmai.
+          </p>
+        </div>
+      </div>
+
+      <form className="panel-form" onSubmit={onSubmit}>
+        <label className="panel-field">
           <span>Nome da loja</span>
           <input
             className="field-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            placeholder="Minha Loja"
           />
         </label>
-        <label style={{ display: "grid", gap: 6 }}>
+        <label className="panel-field">
           <span>Slug / subdomínio</span>
           <input
             className="field-input"
@@ -76,11 +78,9 @@ export default function NovaLojaPage() {
             placeholder="minhaloja"
             required
           />
-          <span className="muted" style={{ fontSize: "0.9rem" }}>
-            {preview}
-          </span>
+          <span className="panel-field-hint">{preview}</span>
         </label>
-        <label style={{ display: "grid", gap: 6 }}>
+        <label className="panel-field">
           <span>Descrição (opcional)</span>
           <textarea
             className="field-input"
@@ -90,10 +90,15 @@ export default function NovaLojaPage() {
             style={{ resize: "vertical" }}
           />
         </label>
-        {error ? <p style={{ color: "#9b2c2c", margin: 0 }}>{error}</p> : null}
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? "Criando…" : "Criar loja"}
-        </button>
+        {error ? <p className="panel-alert">{error}</p> : null}
+        <div className="panel-form-actions">
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? "Criando…" : "Criar loja"}
+          </button>
+          <Link href="/painel/lojas" className="btn btn-secondary">
+            Cancelar
+          </Link>
+        </div>
       </form>
     </main>
   );
