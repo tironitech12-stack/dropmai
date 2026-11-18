@@ -47,11 +47,15 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
-      await apiFetch("/api/v1/auth/register", {
+      const data = await apiFetch<{
+        ok: boolean;
+        session?: string;
+        user?: { id: string; email: string; name: string };
+      }>("/api/v1/auth/register", {
         method: "POST",
         json: { name: name.trim(), email: normalized, password },
       });
-      mirrorSessionCookie();
+      mirrorSessionCookie(data.session);
       router.push("/painel");
       router.refresh();
     } catch (err) {

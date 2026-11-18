@@ -25,6 +25,9 @@ function LoginForm() {
     if (err === "google_not_configured") {
       return "Google ainda não está configurado no servidor (GOOGLE_CLIENT_ID). Use e-mail e senha por enquanto.";
     }
+    if (err === "google_failed") {
+      return "Falha ao validar o login Google. Tente de novo.";
+    }
     return "Não foi possível entrar com Google.";
   });
   const [loading, setLoading] = useState(false);
@@ -51,11 +54,15 @@ function LoginForm() {
 
     setLoading(true);
     try {
-      await apiFetch("/api/v1/auth/login", {
+      const data = await apiFetch<{
+        ok: boolean;
+        session?: string;
+        user?: { id: string; email: string; name: string };
+      }>("/api/v1/auth/login", {
         method: "POST",
         json: { email: normalized, password },
       });
-      mirrorSessionCookie();
+      mirrorSessionCookie(data.session);
       router.push("/painel");
       router.refresh();
     } catch (err) {

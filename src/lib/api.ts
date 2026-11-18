@@ -41,7 +41,6 @@ export async function apiFetch<T = unknown>(
   }
   if (options.cookieHeader) {
     headers.set("cookie", options.cookieHeader);
-    headers.set("x-dropmai-user", "demo");
   }
 
   const res = await fetch(`${API_URL}${path}`, {

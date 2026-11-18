@@ -13,14 +13,18 @@ npm run dev
 
 Abra `http://localhost:3000`. Suba o backend na porta 4000 antes.
 
-Login stub: `paulo@dropmai.com.br` / `demo`.
+Auth: e-mail/senha e Google via Backend. A resposta inclui `session` (`dm1…`); o frontend espelha em `dropmai_session` no host da UI para o SSR encaminhar ao API. Google redireciona para `/auth/callback#session=…`.
+
+Com Backend em `DROPMAI_USE_MOCK=false` + Postgres, User/Account/StoreMember são persistidos.
 
 ## Rotas
 
 | Rota | Função |
 |---|---|
 | `/` | Landing |
-| `/entrar` | Login (chama `POST /api/v1/auth/login`) |
+| `/entrar` | Login (`POST /api/v1/auth/login`) |
+| `/cadastro` | Cadastro (`POST /api/v1/auth/register`) |
+| `/auth/callback` | Bridge da sessão Google |
 | `/painel` | Lista lojas |
 | `/painel/lojas/nova` | Criar loja |
 | `/painel/lojas/[id]/produtos` | Catálogo + sync Xnamai |
