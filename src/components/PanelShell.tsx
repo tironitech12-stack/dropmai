@@ -46,9 +46,6 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [fornecedoresOpen, setFornecedoresOpen] = useState(
-    pathname.startsWith("/painel/fornecedores"),
-  );
   const searchRef = useRef<HTMLInputElement>(null);
 
   const channelNav: NavItem[] = useMemo(
@@ -82,9 +79,6 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
 
   useEffect(() => {
     setOpen(false);
-    if (pathname.startsWith("/painel/fornecedores")) {
-      setFornecedoresOpen(true);
-    }
   }, [pathname]);
 
   useEffect(() => {
@@ -166,26 +160,16 @@ export function PanelShell({ user, stores, children }: PanelShellProps) {
 
         {showFornecedores ? (
           <div className="panel-nav-section">
-            <button
-              type="button"
-              className={`panel-nav-section-toggle${fornecedoresOpen || xnamaiActive ? " is-open" : ""}`}
-              aria-expanded={fornecedoresOpen || xnamaiActive}
-              onClick={() => setFornecedoresOpen((v) => !v)}
-            >
-              <span>Fornecedores</span>
-              <IconChevron className="panel-nav-chevron" />
-            </button>
-            {(fornecedoresOpen || xnamaiActive || Boolean(query.trim())) && (
-              <nav className="panel-nav" aria-label="Fornecedores">
-                <Link
-                  href="/painel/fornecedores/xnamai"
-                  className={`panel-nav-link panel-nav-sub${xnamaiActive ? " is-active" : ""}`}
-                >
-                  <IconTruck />
-                  <span>Xnamai</span>
-                </Link>
-              </nav>
-            )}
+            <p className="panel-nav-section-title">Fornecedores</p>
+            <nav className="panel-nav" aria-label="Fornecedores">
+              <Link
+                href="/painel/fornecedores/xnamai"
+                className={`panel-nav-link${xnamaiActive ? " is-active" : ""}`}
+              >
+                <IconTruck />
+                <span>Xnamai</span>
+              </Link>
+            </nav>
           </div>
         ) : null}
 
@@ -640,20 +624,6 @@ function IconTruck(props: SVGProps<SVGSVGElement>) {
       />
       <circle cx="7" cy="17.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
       <circle cx="16.5" cy="17.5" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function IconChevron(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...iconProps(props)} width={14} height={14} className={props.className}>
-      <path
-        d="m5 4.5 4.5 3.5L5 11.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }

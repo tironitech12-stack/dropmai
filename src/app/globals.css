@@ -819,6 +819,7 @@ textarea.field-input:-webkit-autofill:focus {
   padding: 1rem 0.75rem 0.85rem;
   min-height: 100svh;
   max-height: 100svh;
+  height: 100svh;
   overflow: hidden;
 }
 
@@ -881,13 +882,16 @@ textarea.field-input:-webkit-autofill:focus {
 }
 
 .panel-side-scroll {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   padding-right: 0.15rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .panel-nav {
