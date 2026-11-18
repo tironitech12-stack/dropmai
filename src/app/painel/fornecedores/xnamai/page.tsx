@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { XnamaiProductThumb } from "@/components/XnamaiProductThumb";
 import { apiFetchServer } from "@/lib/api-server";
 
 type CatalogProduct = {
@@ -256,23 +257,7 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
 }
 
 function ProductThumb({ product }: { product: CatalogProduct }) {
-  // Backend always supplies CDN or Dropmai image-proxy URL — never letter placeholders.
-  const src = product.imageUrl;
-  if (!src) {
-    return <span className="xn-thumb xn-thumb-fallback" aria-hidden />;
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt=""
-      className="xn-thumb"
-      width={160}
-      height={160}
-      loading="lazy"
-      referrerPolicy="no-referrer"
-    />
-  );
+  return <XnamaiProductThumb product={product} />;
 }
 
 function formatBRL(value: number) {
