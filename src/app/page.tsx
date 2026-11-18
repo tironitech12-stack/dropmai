@@ -22,8 +22,8 @@ export default function HomePage() {
           <Link href="/entrar" className="btn btn-text">
             Entrar
           </Link>
-          <Link href="/painel/lojas/nova" className="btn btn-solid btn-nav">
-            Criar loja
+          <Link href="/cadastro" className="btn btn-solid btn-nav">
+            Criar conta
           </Link>
         </div>
       </header>

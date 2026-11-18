@@ -1,28 +1,61 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
+import {
+  googleAuthUrl,
+  isValidEmail,
+  mirrorSessionCookie,
+  normalizeEmail,
+} from "@/lib/auth";
+import { AuthShell, GoogleButton } from "@/components/AuthShell";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("paulo@dropmai.com.br");
-  const [password, setPassword] = useState("demo");
-  const [error, setError] = useState<string | null>(null);
+  const params = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fieldError, setFieldError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    const err = params.get("error");
+    if (!err) return null;
+    if (err === "google_not_configured") {
+      return "Google ainda não está configurado no servidor (GOOGLE_CLIENT_ID). Use e-mail e senha por enquanto.";
+    }
+    return "Não foi possível entrar com Google.";
+  });
   const [loading, setLoading] = useState(false);
+
+  const googleHref = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    return googleAuthUrl(`${window.location.origin}/painel`);
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    setFieldError(null);
+
+    const normalized = normalizeEmail(email);
+    if (!isValidEmail(normalized)) {
+      setFieldError("Informe um e-mail válido.");
+      return;
+    }
+    if (!password.trim()) {
+      setFieldError("Informe a senha.");
+      return;
+    }
+
+    setLoading(true);
     try {
       await apiFetch("/api/v1/auth/login", {
         method: "POST",
-        json: { email, password },
+        json: { email: normalized, password },
       });
-      // Mirror session on the frontend host (cross-port stub with Nest cookie)
-      document.cookie = "dropmai_session=demo; path=/; max-age=1209600; samesite=lax";
+      mirrorSessionCookie();
       router.push("/painel");
       router.refresh();
     } catch (err) {
@@ -33,29 +66,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="shell" style={{ padding: "3rem 0", maxWidth: 480 }}>
-      <Link href="/" className="muted">
-        ← Dropmai
-      </Link>
-      <h1
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "2.4rem",
-          margin: "1rem 0 0.35rem",
-        }}
-      >
-        Entrar
-      </h1>
-      <p className="muted" style={{ marginTop: 0 }}>
-        Auth stub no backend — use o e-mail demo.
-      </p>
-      <form
-        className="panel"
-        onSubmit={onSubmit}
-        style={{ padding: "1.25rem", display: "grid", gap: "0.85rem" }}
-      >
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>E-mail</span>
+    <AuthShell
+      title="Entrar na sua conta"
+      subtitle="Acesse o painel Dropmai para criar lojas e publicar o catálogo Xnamai."
+      footer={
+        <>
+          Não tem conta? <Link href="/cadastro">Criar conta</Link>
+        </>
+      }
+    >
+      <GoogleButton href={googleHref} />
+      <div className="auth-divider">
+        <span>ou</span>
+      </div>
+
+      <form className="auth-form" onSubmit={onSubmit} noValidate>
+        <label>
+          E-mail
           <input
             className="field-input"
             value={email}
@@ -66,8 +93,8 @@ export default function LoginPage() {
             placeholder="voce@email.com"
           />
         </label>
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>Senha</span>
+        <label>
+          Senha
           <input
             className="field-input"
             value={password}
@@ -78,11 +105,23 @@ export default function LoginPage() {
             placeholder="••••••••"
           />
         </label>
-        {error ? <p style={{ color: "#9b2c2c", margin: 0 }}>{error}</p> : null}
-        <button className="btn btn-primary" type="submit" disabled={loading}>
-          {loading ? "Entrando…" : "Entrar no painel"}
+        {(fieldError || error) && (
+          <p className="auth-error" role="alert">
+            {fieldError || error}
+          </p>
+        )}
+        <button className="btn auth-submit" type="submit" disabled={loading}>
+          {loading ? "Entrando…" : "Continuar"}
         </button>
       </form>
-    </main>
+    </AuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<AuthShell title="Entrar na sua conta"><p className="auth-sub">Carregando…</p></AuthShell>}>
+      <LoginForm />
+    </Suspense>
   );
 }
