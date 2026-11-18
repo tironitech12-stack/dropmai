@@ -51,7 +51,10 @@ export function sanitizeProductImageUrl(
     return `${api.replace(/\/$/, "")}${raw}`;
   }
 
-  if (!raw || /localhost|127\.0\.0\.1/i.test(raw)) {
+  // No URL from API → intentional blank (e.g. color variant with no B2B photo).
+  if (!raw) return null;
+
+  if (/localhost|127\.0\.0\.1/i.test(raw)) {
     return buildProxyUrl(productId, { sku: product.sku, title: product.title });
   }
 
@@ -92,7 +95,8 @@ export function XnamaiProductThumb({ product }: Props) {
     setFailed(false);
   }, [initial]);
 
-  // Background upgrade: if we only have a proxy URL, force-resolve once CDN may be warm.
+  // Background upgrade only for legacy proxy URLs — never invent a photo
+  // when API sent null (wrong-color variants stay blank).
   useEffect(() => {
     if (!src || isCdnUrl(src) || !isProxyUrl(src)) return;
     let cancelled = false;
@@ -111,6 +115,9 @@ export function XnamaiProductThumb({ product }: Props) {
           if (/image\/(jpeg|jpg|png|webp|gif)/i.test(ct)) {
             setSrc(forced);
             setFailed(false);
+          } else {
+            // SVG placeholder / miss → blank tile
+            setFailed(true);
           }
         } catch {
           /* ignore */
