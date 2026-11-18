@@ -26,12 +26,14 @@ function buildProxyUrl(
   return `${api.replace(/\/$/, "")}/api/v1/suppliers/xnamai/products/${encodeURIComponent(productId)}/image${suffix}`;
 }
 
-function initialsFor(title: string) {
-  const cleaned = title.replace(/^pr[eé]\s*cadastro\s*/i, "").trim();
-  const parts = cleaned.split(/\s+/).filter(Boolean);
-  if (!parts.length) return "X";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+function isCdnUrl(url: string | null | undefined) {
+  return Boolean(
+    url && /arquivos\.mercos\.com|thumbnails\.meuspedidos\.com\.br/i.test(url),
+  );
+}
+
+function isProxyUrl(url: string | null | undefined) {
+  return Boolean(url && /\/suppliers\/xnamai\/products\/.+\/image/i.test(url));
 }
 
 /** Fix localhost / relative proxy URLs baked by a misconfigured PUBLIC_API_URL. */
@@ -42,8 +44,7 @@ export function sanitizeProductImageUrl(
   const raw = (imageUrl ?? "").trim();
   const productId = product.externalId || product.id;
 
-  if (/^https:\/\/arquivos\.mercos\.com\//i.test(raw)) return raw;
-  if (/^https:\/\/thumbnails\.meuspedidos\.com\.br\//i.test(raw)) return raw;
+  if (isCdnUrl(raw)) return raw;
 
   if (raw.startsWith("/api/v1/suppliers/xnamai/products/")) {
     const api = getApiUrl() || "https://dropmai-backend.onrender.com";
@@ -84,27 +85,47 @@ export function XnamaiProductThumb({ product }: Props) {
     [product.imageUrl, product.externalId, product.id, product.sku, product.title],
   );
   const [src, setSrc] = useState<string | null>(initial);
-  const [phase, setPhase] = useState<"img" | "fallback">(
-    initial ? "img" : "fallback",
-  );
-  const [triedForce, setTriedForce] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     setSrc(initial);
-    setPhase(initial ? "img" : "fallback");
-    setTriedForce(false);
+    setFailed(false);
   }, [initial]);
 
-  if (phase === "fallback" || !src) {
-    return (
-      <div
-        className="xn-thumb xn-thumb-fallback"
-        aria-hidden
-        title={product.title}
-      >
-        {initialsFor(product.title)}
-      </div>
+  // Background upgrade: if we only have a proxy URL, force-resolve once CDN may be warm.
+  useEffect(() => {
+    if (!src || isCdnUrl(src) || !isProxyUrl(src)) return;
+    let cancelled = false;
+    const productId = product.externalId || product.id;
+    const timers = [1200, 3500].map((ms) =>
+      window.setTimeout(async () => {
+        const forced = buildProxyUrl(productId, {
+          sku: product.sku,
+          title: product.title,
+          force: true,
+        });
+        try {
+          const res = await fetch(forced, { method: "GET", cache: "no-store" });
+          const ct = res.headers.get("content-type") || "";
+          if (cancelled || !res.ok) return;
+          if (/image\/(jpeg|jpg|png|webp|gif)/i.test(ct)) {
+            setSrc(forced);
+            setFailed(false);
+          }
+        } catch {
+          /* ignore */
+        }
+      }, ms),
     );
+    return () => {
+      cancelled = true;
+      timers.forEach((t) => window.clearTimeout(t));
+    };
+  }, [src, product.externalId, product.id, product.sku, product.title]);
+
+  if (failed || !src) {
+    // Soft neutral tile — avoid broken-icon glyph. Prefer photos via BE resolve.
+    return <div className="xn-thumb xn-thumb-fallback" aria-hidden />;
   }
 
   return (
@@ -119,16 +140,12 @@ export function XnamaiProductThumb({ product }: Props) {
       decoding="async"
       referrerPolicy="no-referrer"
       onError={() => {
-        const isCdn =
-          /arquivos\.mercos\.com|thumbnails\.meuspedidos\.com\.br/i.test(src);
-        if (isCdn && !triedForce) {
-          setTriedForce(true);
+        if (isCdnUrl(src)) {
           const bust = src.includes("?") ? "&" : "?";
           setSrc(`${src}${bust}_dm=${Date.now()}`);
           return;
         }
-        if (!isCdn && !triedForce) {
-          setTriedForce(true);
+        if (isProxyUrl(src) && !/[?&]force=1/.test(src)) {
           setSrc(
             buildProxyUrl(product.externalId || product.id, {
               sku: product.sku,
@@ -138,8 +155,7 @@ export function XnamaiProductThumb({ product }: Props) {
           );
           return;
         }
-        // Final: solid fallback — never leave a broken <img> icon.
-        setPhase("fallback");
+        setFailed(true);
       }}
     />
   );

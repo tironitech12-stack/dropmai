@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { XnamaiCatalogRefresh } from "@/components/XnamaiCatalogRefresh";
 import { XnamaiProductThumb } from "@/components/XnamaiProductThumb";
 import { apiFetchServer } from "@/lib/api-server";
 
@@ -98,6 +99,7 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
 
   return (
     <main className="panel-page">
+      <XnamaiCatalogRefresh />
       <div className="panel-page-head">
         <div>
           <p className="panel-eyebrow">Fornecedores</p>
