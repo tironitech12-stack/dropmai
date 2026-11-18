@@ -38,6 +38,37 @@ a {
   text-decoration: none;
 }
 
+/* Light form fields on dark pages: never inherit white body text */
+.field-input,
+input.field-input,
+textarea.field-input {
+  color: #111713;
+  caret-color: #111713;
+  background-color: #fffdf8;
+  border: 1px solid rgba(17, 23, 19, 0.18);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+}
+
+.field-input::placeholder,
+textarea.field-input::placeholder {
+  color: rgba(17, 23, 19, 0.45);
+  opacity: 1;
+}
+
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:hover,
+.field-input:-webkit-autofill:focus,
+textarea.field-input:-webkit-autofill,
+textarea.field-input:-webkit-autofill:hover,
+textarea.field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111713;
+  caret-color: #111713;
+  box-shadow: 0 0 0 1000px #fffdf8 inset;
+  transition: background-color 99999s ease-out;
+}
+
 .shell {
   width: min(1180px, calc(100% - 2.5rem));
   margin-inline: auto;

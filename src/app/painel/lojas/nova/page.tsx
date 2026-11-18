@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState, type CSSProperties } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
@@ -61,20 +61,20 @@ export default function NovaLojaPage() {
         <label style={{ display: "grid", gap: 6 }}>
           <span>Nome da loja</span>
           <input
+            className="field-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            style={inputStyle}
           />
         </label>
         <label style={{ display: "grid", gap: 6 }}>
           <span>Slug / subdomínio</span>
           <input
+            className="field-input"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder="minhaloja"
             required
-            style={inputStyle}
           />
           <span className="muted" style={{ fontSize: "0.9rem" }}>
             {preview}
@@ -83,10 +83,11 @@ export default function NovaLojaPage() {
         <label style={{ display: "grid", gap: 6 }}>
           <span>Descrição (opcional)</span>
           <textarea
+            className="field-input"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            style={{ ...inputStyle, resize: "vertical" }}
+            style={{ resize: "vertical" }}
           />
         </label>
         {error ? <p style={{ color: "#9b2c2c", margin: 0 }}>{error}</p> : null}
@@ -97,11 +98,3 @@ export default function NovaLojaPage() {
     </main>
   );
 }
-
-const inputStyle: CSSProperties = {
-  border: "1px solid var(--line)",
-  borderRadius: 12,
-  padding: "0.75rem 0.9rem",
-  font: "inherit",
-  background: "#fffdf8",
-};

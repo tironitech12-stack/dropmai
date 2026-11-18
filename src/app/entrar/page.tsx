@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, type CSSProperties } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
@@ -57,21 +57,25 @@ export default function LoginPage() {
         <label style={{ display: "grid", gap: 6 }}>
           <span>E-mail</span>
           <input
+            className="field-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
+            autoComplete="email"
             required
-            style={inputStyle}
+            placeholder="voce@email.com"
           />
         </label>
         <label style={{ display: "grid", gap: 6 }}>
           <span>Senha</span>
           <input
+            className="field-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type="password"
+            autoComplete="current-password"
             required
-            style={inputStyle}
+            placeholder="••••••••"
           />
         </label>
         {error ? <p style={{ color: "#9b2c2c", margin: 0 }}>{error}</p> : null}
@@ -82,11 +86,3 @@ export default function LoginPage() {
     </main>
   );
 }
-
-const inputStyle: CSSProperties = {
-  border: "1px solid var(--line)",
-  borderRadius: 12,
-  padding: "0.75rem 0.9rem",
-  font: "inherit",
-  background: "#fffdf8",
-};
