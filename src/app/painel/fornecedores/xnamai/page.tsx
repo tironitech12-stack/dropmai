@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ImportToStoreButton } from "@/components/ImportToStoreModal";
 import { XnamaiCatalogRefresh } from "@/components/XnamaiCatalogRefresh";
 import { XnamaiProductThumb } from "@/components/XnamaiProductThumb";
 import { apiFetchServer } from "@/lib/api-server";
@@ -8,6 +9,7 @@ type CatalogProduct = {
   externalId: string;
   sku: string | null;
   title: string;
+  description?: string | null;
   stock: number;
   costPrice: number;
   categoryId: string | null;
@@ -166,6 +168,7 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
                         <span>{formatBRL(p.costPrice)}</span>
                         <span className="xn-stock">Estoque {formatStock(p.stock)}</span>
                       </span>
+                      <ImportToStoreButton product={p} />
                     </div>
                   </article>
                 ))}
@@ -219,6 +222,7 @@ export default async function FornecedorXnamaiPage({ searchParams }: PageProps) 
                         Estoque {formatStock(p.stock)}
                       </span>
                     </span>
+                    <ImportToStoreButton product={p} />
                   </div>
                 </article>
               ))}
