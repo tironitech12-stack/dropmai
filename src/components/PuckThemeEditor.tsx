@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { apiFetch, type StoreSummary } from "@/lib/api";
@@ -26,6 +27,11 @@ export function PuckThemeEditor({ storeId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,6 +62,16 @@ export function PuckThemeEditor({ storeId }: Props) {
       cancelled = true;
     };
   }, [storeId]);
+
+  // Lock page scroll while the full-screen editor is open.
+  useEffect(() => {
+    if (!store || !data) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [store, data]);
 
   const runtime = useMemo(
     () => ({
@@ -141,8 +157,8 @@ export function PuckThemeEditor({ storeId }: Props) {
 
   const meta = themeMeta(store.themeId || "vitrine");
 
-  return (
-    <div className="dm-puck-shell">
+  const editor = (
+    <div className="dm-puck-shell" role="application" aria-label="Editor de tema">
       <div className="dm-puck-topbar">
         <div>
           <Link href="/painel/canais/loja-virtual" className="panel-text-link">
@@ -166,15 +182,29 @@ export function PuckThemeEditor({ storeId }: Props) {
         </div>
       </div>
 
-      <StorefrontRuntimeProvider value={runtime}>
-        <Puck
-          config={dropmaiPuckConfig}
-          data={data}
-          onPublish={(next) => void persist(next)}
-          headerTitle={`${store.name} · ${meta.name}`}
-          iframe={{ enabled: false }}
-        />
-      </StorefrontRuntimeProvider>
+      <div className="dm-puck-canvas">
+        <StorefrontRuntimeProvider value={runtime}>
+          <Puck
+            config={dropmaiPuckConfig}
+            data={data}
+            onPublish={(next) => void persist(next)}
+            headerTitle={`${store.name} · ${meta.name}`}
+            iframe={{ enabled: false }}
+          />
+        </StorefrontRuntimeProvider>
+      </div>
     </div>
   );
+
+  // Portal escapes PanelShell `.fade-up` transform, which otherwise traps
+  // position:fixed and collapses the editor into the 960px content column.
+  if (!mounted) {
+    return (
+      <main className="panel-page">
+        <p className="panel-muted-note">Abrindo editor…</p>
+      </main>
+    );
+  }
+
+  return createPortal(editor, document.body);
 }

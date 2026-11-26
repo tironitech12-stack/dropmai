@@ -2010,14 +2010,17 @@ textarea.field-input:-webkit-autofill:focus {
 .dm-puck-shell {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 80;
   display: flex;
   flex-direction: column;
+  width: 100vw;
+  height: 100dvh;
   background: #fff;
   color: #15202b;
 }
 
 .dm-puck-topbar {
+  flex: none;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -2030,6 +2033,11 @@ textarea.field-input:-webkit-autofill:focus {
 .dm-puck-topbar strong {
   display: block;
   margin-top: 0.15rem;
+  color: #15202b;
+}
+
+.dm-puck-topbar .panel-text-link {
+  color: #0a5c49;
 }
 
 .dm-puck-topbar-actions {
@@ -2039,9 +2047,23 @@ textarea.field-input:-webkit-autofill:focus {
   align-items: center;
 }
 
-.dm-puck-shell > div:last-child,
-.dm-puck-shell [class*="Puck"] {
-  flex: 1;
+.dm-puck-canvas {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-puck-canvas > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+/* Puck root layout needs an explicit height chain */
+.dm-puck-canvas [class*="Puck"] {
+  height: 100% !important;
   min-height: 0;
 }
 
