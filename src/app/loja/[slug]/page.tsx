@@ -1,7 +1,13 @@
+import { StorefrontPuck } from "@/components/StorefrontPuck";
 import { StorefrontTheme } from "@/components/StorefrontTheme";
 import { getApiUrl, type ProductRow, type StoreSummary } from "@/lib/api";
 import { apiFetchServer } from "@/lib/api-server";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
+import {
+  buildDefaultPuckData,
+  isPuckData,
+  type DropmaiPuckData,
+} from "@/puck/default-data";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -65,7 +71,6 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
 
   if (!store) notFound();
 
-  // Public products endpoint may return a lean store — refill theme from public store.
   if (!store.themeSettings) {
     try {
       const only = await apiFetchServer<{ store: StoreSummary }>(
@@ -81,6 +86,22 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
   const settings =
     store.themeSettings ??
     buildDefaultSettingsClient(themeId, store.name, store.logoUrl);
+
+  const puckData: DropmaiPuckData = isPuckData(settings.puck)
+    ? (settings.puck as DropmaiPuckData)
+    : buildDefaultPuckData(store.name, themeId, settings);
+
+  // Prefer Puck layout whenever we have structured page data.
+  if (isPuckData(puckData)) {
+    return (
+      <StorefrontPuck
+        storeName={store.name}
+        storeSlug={store.slug}
+        products={products}
+        data={puckData}
+      />
+    );
+  }
 
   return (
     <StorefrontTheme

@@ -32,6 +32,8 @@ export type ThemeSettings = {
   home: {
     sections: ThemeSection[];
   };
+  /** Puck page JSON (sections/blocks). When present, storefront prefers it. */
+  puck?: unknown;
 };
 
 export type ThemeDefinition = {
