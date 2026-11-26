@@ -1085,6 +1085,25 @@ textarea.field-input:-webkit-autofill:focus {
   justify-content: center;
 }
 
+.xn-import-anchor {
+  position: relative;
+  width: 100%;
+}
+
+.xn-import-popover {
+  z-index: 90;
+  overflow: auto;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(21, 32, 43, 0.14);
+  background: #fff;
+  color: var(--panel-ink);
+  box-shadow: 0 16px 40px rgba(12, 22, 32, 0.22);
+}
+
+/* Legacy centered modal kept for any leftover references */
 .xn-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1141,13 +1160,21 @@ textarea.field-input:-webkit-autofill:focus {
 
 .xn-modal-product {
   display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 0.85rem;
+  grid-template-columns: 64px 1fr;
+  gap: 0.7rem;
   align-items: start;
+}
+
+.xn-import-popover .xn-modal-product {
+  grid-template-columns: 56px 1fr;
 }
 
 .xn-modal-thumb {
   width: 96px;
+}
+
+.xn-import-popover .xn-modal-thumb {
+  width: 56px;
 }
 
 .xn-modal-thumb .xn-thumb,
