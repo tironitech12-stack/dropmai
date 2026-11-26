@@ -42,29 +42,57 @@ export type ThemeDefinition = {
   tagline: string;
   free: true;
   previewAccent: string;
+  previewAccent2?: string;
 };
 
 export const THEME_META: ThemeDefinition[] = [
   {
     id: "vitrine",
     name: "Vitrine",
-    tagline: "Hero amplo e grade de produtos — ideal para começar.",
+    tagline: "Hero amplo e vitrine de marca — ideal para loja própria.",
     free: true,
-    previewAccent: "#0f8a6b",
+    previewAccent: "#0d9488",
+    previewAccent2: "#134e4a",
   },
   {
     id: "minimal",
     name: "Minimal",
-    tagline: "Limpo e tipográfico — foco no catálogo.",
+    tagline: "Limpo e tipográfico — pouco ruído, foco no produto.",
     free: true,
-    previewAccent: "#1c1917",
+    previewAccent: "#292524",
+    previewAccent2: "#a8a29e",
   },
   {
     id: "catalogo",
     name: "Catálogo",
-    tagline: "Visual denso para muitas SKUs e preço em evidência.",
+    tagline: "Grade densa e preço em evidência — muitas SKUs / B2B.",
     free: true,
-    previewAccent: "#1d4ed8",
+    previewAccent: "#2563eb",
+    previewAccent2: "#1e3a8a",
+  },
+  {
+    id: "boutique",
+    name: "Boutique",
+    tagline: "Sofisticado e editorial — moda, beleza e lifestyle.",
+    free: true,
+    previewAccent: "#9f1239",
+    previewAccent2: "#fce7f3",
+  },
+  {
+    id: "urbano",
+    name: "Urbano",
+    tagline: "Street e contraste alto — drop, sneaker e cultura jovem.",
+    free: true,
+    previewAccent: "#fb923c",
+    previewAccent2: "#0a0a0a",
+  },
+  {
+    id: "solar",
+    name: "Solar",
+    tagline: "Varejo alegre e solar — casa, kids e presentes.",
+    free: true,
+    previewAccent: "#ea580c",
+    previewAccent2: "#fbbf24",
   },
 ];
 
@@ -89,4 +117,12 @@ export function themeCssVars(
     "--dm-font-heading": settings.typography.heading,
     "--dm-font-body": settings.typography.body,
   };
+}
+
+export function isDenseTheme(themeId: string) {
+  return themeId === "catalogo";
+}
+
+export function isMinimalTheme(themeId: string) {
+  return themeId === "minimal";
 }

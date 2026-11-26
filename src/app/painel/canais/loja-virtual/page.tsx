@@ -24,6 +24,7 @@ export default async function LojaVirtualPage() {
         tagline: string;
         free: boolean;
         previewAccent: string;
+        previewAccent2?: string;
       }>;
     }>("/api/v1/themes");
     if (data.themes?.length) {
@@ -33,6 +34,7 @@ export default async function LojaVirtualPage() {
         tagline: t.tagline,
         free: true as const,
         previewAccent: t.previewAccent,
+        previewAccent2: t.previewAccent2,
       }));
     }
   } catch {
@@ -132,17 +134,21 @@ export default async function LojaVirtualPage() {
           <section className="panel-section" aria-labelledby="descobrir-temas">
             <div className="panel-section-head">
               <h2 id="descobrir-temas">Descobrir temas</h2>
-              <p>Temas gratuitos para começar. Depois personalize logo, cores e textos.</p>
+              <p>
+                Seis estilos gratuitos — marca, minimal, B2B, boutique, street e
+                varejo solar. Depois personalize no editor.
+              </p>
             </div>
             <div className="dm-theme-grid">
               {themes.map((theme) => {
                 const active = (primary.themeId || "vitrine") === theme.id;
+                const accent2 = theme.previewAccent2 || theme.previewAccent;
                 return (
                   <article key={theme.id} className="dm-theme-card">
                     <div
                       className="dm-theme-card-preview"
                       style={{
-                        background: `linear-gradient(160deg, ${theme.previewAccent}, ${theme.previewAccent}99 40%, #f8fafc)`,
+                        background: `linear-gradient(145deg, ${theme.previewAccent} 0%, ${accent2} 55%, #f8fafc 120%)`,
                       }}
                     >
                       <span>{theme.name}</span>

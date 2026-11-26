@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 import type { ProductRow } from "@/lib/api";
 import {
+  isDenseTheme,
+  isMinimalTheme,
   sectionByType,
   themeCssVars,
   type ThemeSettings,
@@ -32,8 +34,8 @@ export function StorefrontTheme({
   const footer = sectionByType(settings, "footer");
   const limit = Number(featured?.props.limit ?? 12) || 12;
   const list = products.slice(0, limit);
-  const dense = themeId === "catalogo";
-  const minimal = themeId === "minimal";
+  const dense = isDenseTheme(themeId);
+  const minimal = isMinimalTheme(themeId);
 
   return (
     <div

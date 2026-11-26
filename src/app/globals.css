@@ -2436,6 +2436,155 @@ textarea.field-input:-webkit-autofill:focus {
   font-size: 0.85rem;
 }
 
+/* Theme layout variants */
+.dm-theme-vitrine .dm-hero {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.dm-theme-vitrine .dm-hero h1 {
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+}
+
+.dm-theme-vitrine .dm-card {
+  border-radius: 16px;
+}
+
+.dm-theme-minimal .dm-header.is-minimal,
+.dm-theme-minimal .dm-header {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+.dm-theme-minimal .dm-brand-name {
+  letter-spacing: -0.03em;
+  font-weight: 650;
+}
+
+.dm-theme-minimal .dm-cta {
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dm-text);
+  border: 1px solid color-mix(in srgb, var(--dm-text) 35%, transparent);
+}
+
+.dm-theme-minimal .dm-card {
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--dm-text) 12%, transparent);
+  border-radius: 0;
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dm-theme-catalogo .dm-price {
+  font-size: 1.1rem;
+  color: var(--dm-primary);
+}
+
+.dm-theme-catalogo .dm-hero {
+  padding-top: 1.75rem;
+}
+
+.dm-theme-catalogo .dm-card {
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.dm-theme-boutique .dm-hero {
+  padding-top: 3.5rem;
+  text-align: center;
+}
+
+.dm-theme-boutique .dm-hero-copy {
+  max-width: 34rem;
+  margin: 0 auto;
+  justify-items: center;
+}
+
+.dm-theme-boutique .dm-eyebrow {
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+}
+
+.dm-theme-boutique .dm-cta {
+  border-radius: 999px;
+  padding-inline: 1.5rem;
+  background: transparent;
+  color: var(--dm-primary);
+  border: 1px solid var(--dm-primary);
+}
+
+.dm-theme-boutique .dm-grid {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.dm-theme-boutique .dm-card {
+  border: none;
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--dm-primary) 8%, transparent);
+  border-radius: 20px;
+}
+
+.dm-theme-urbano .dm-announce {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+}
+
+.dm-theme-urbano .dm-brand-name {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.dm-theme-urbano .dm-hero h1 {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-weight: 850;
+}
+
+.dm-theme-urbano .dm-cta {
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+}
+
+.dm-theme-urbano .dm-card {
+  border-radius: 0;
+  border-color: color-mix(in srgb, var(--dm-text) 18%, transparent);
+}
+
+.dm-theme-urbano .dm-price {
+  color: var(--dm-primary);
+}
+
+.dm-theme-solar .dm-hero {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--dm-primary) 16%, transparent),
+    transparent 60%
+  );
+  border-radius: 0 0 28px 28px;
+  margin-bottom: 0.5rem;
+}
+
+.dm-theme-solar .dm-cta {
+  border-radius: 14px;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--dm-primary) 28%, transparent);
+}
+
+.dm-theme-solar .dm-card {
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--dm-secondary) 10%, transparent);
+}
+
+.dm-theme-solar .dm-price {
+  font-size: 1.05rem;
+}
+
 @media (max-width: 900px) {
   .dm-active-theme,
   .dm-editor-layout {
