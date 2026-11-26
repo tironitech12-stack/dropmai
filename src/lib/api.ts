@@ -1,3 +1,5 @@
+import type { ThemeSettings } from "@/lib/themes";
+
 function resolveApiUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");
@@ -96,6 +98,9 @@ export type StoreSummary = {
   name: string;
   status: string;
   description?: string | null;
+  logoUrl?: string | null;
+  themeId?: string;
+  themeSettings?: ThemeSettings;
   createdAt: string;
 };
 

@@ -1,5 +1,7 @@
+import { StorefrontTheme } from "@/components/StorefrontTheme";
 import { getApiUrl, type ProductRow, type StoreSummary } from "@/lib/api";
 import { apiFetchServer } from "@/lib/api-server";
+import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -63,83 +65,30 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
 
   if (!store) notFound();
 
+  // Public products endpoint may return a lean store — refill theme from public store.
+  if (!store.themeSettings) {
+    try {
+      const only = await apiFetchServer<{ store: StoreSummary }>(
+        `/api/v1/public/stores/${slug}`,
+      );
+      store = { ...store, ...only.store };
+    } catch {
+      /* keep lean store */
+    }
+  }
+
+  const themeId = store.themeId || "vitrine";
+  const settings =
+    store.themeSettings ??
+    buildDefaultSettingsClient(themeId, store.name, store.logoUrl);
+
   return (
-    <main>
-      <header className="shell" style={{ padding: "1.5rem 0" }}>
-        <div
-          className="muted"
-          style={{
-            fontSize: "0.8rem",
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-          }}
-        >
-          Vitrine Dropmai
-        </div>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(2rem, 6vw, 3.4rem)",
-            margin: "0.3rem 0",
-          }}
-        >
-          {store.name}
-        </h1>
-        <p className="muted" style={{ marginTop: 0 }}>
-          {store.slug}.dropmai.com.br
-          {store.description ? ` — ${store.description}` : null}
-        </p>
-      </header>
-
-      <section
-        className="shell"
-        style={{ paddingBottom: "3rem", display: "grid", gap: "0.85rem" }}
-      >
-        {products.length === 0 ? (
-          <div className="panel" style={{ padding: "1.25rem" }}>
-            <p style={{ margin: 0 }}>Nenhum produto publicado ainda.</p>
-            <p className="muted" style={{ marginBottom: 0 }}>
-              No painel, sincronize o catálogo Xnamai e publique itens na loja.
-            </p>
-          </div>
-        ) : (
-          products.map((p) => (
-            <article
-              key={p.id}
-              className="panel"
-              style={{
-                padding: "1rem 1.15rem",
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "1rem",
-                flexWrap: "wrap",
-              }}
-            >
-              <div>
-                <strong
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  {p.title}
-                </strong>
-                <div className="muted">{p.sku}</div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontWeight: 700 }}>{formatBRL(p.sellPrice)}</div>
-                <div className="muted" style={{ fontSize: "0.85rem" }}>
-                  {p.stock > 0 ? "Em estoque" : "Sob consulta"}
-                </div>
-              </div>
-            </article>
-          ))
-        )}
-      </section>
-    </main>
+    <StorefrontTheme
+      storeName={store.name}
+      storeSlug={store.slug}
+      themeId={themeId}
+      settings={settings}
+      products={products}
+    />
   );
-}
-
-function formatBRL(value: number) {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
