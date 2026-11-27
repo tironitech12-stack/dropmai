@@ -8,28 +8,22 @@ export default async function PainelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let user: { name?: string; email?: string } | null = null;
-  let stores: StoreSummary[] = [];
+  // Parallelize independent session + store lookups (was a serial waterfall).
+  const [meResult, storesResult] = await Promise.allSettled([
+    apiFetchServer<{ user: { name?: string; email?: string } | null }>(
+      "/api/v1/auth/me",
+    ),
+    apiFetchServer<{ stores: StoreSummary[] }>("/api/v1/stores"),
+  ]);
 
-  try {
-    const data = await apiFetchServer<{
-      user: { name?: string; email?: string } | null;
-    }>("/api/v1/auth/me");
-    user = data.user;
-  } catch {
-    user = null;
-  }
-
+  const user =
+    meResult.status === "fulfilled" ? meResult.value.user : null;
   if (!user) redirect("/entrar");
 
-  try {
-    const data = await apiFetchServer<{ stores: StoreSummary[] }>(
-      "/api/v1/stores",
-    );
-    stores = data.stores ?? [];
-  } catch {
-    stores = [];
-  }
+  const stores =
+    storesResult.status === "fulfilled"
+      ? (storesResult.value.stores ?? [])
+      : [];
 
   return (
     <PanelShell user={user} stores={stores}>

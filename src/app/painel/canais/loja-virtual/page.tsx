@@ -7,17 +7,12 @@ import { THEME_META, themeMeta } from "@/lib/themes";
 export default async function LojaVirtualPage() {
   let stores: StoreSummary[] = [];
   let themes = THEME_META;
-  try {
-    const data = await apiFetchServer<{ stores: StoreSummary[] }>(
-      "/api/v1/stores",
-    );
-    stores = data.stores ?? [];
-  } catch {
-    stores = [];
-  }
 
-  try {
-    const data = await apiFetchServer<{
+  // Parallel stores + themes (layout already fetched stores once; this keeps
+  // page self-contained but no longer serializes the two calls).
+  const [storesResult, themesResult] = await Promise.allSettled([
+    apiFetchServer<{ stores: StoreSummary[] }>("/api/v1/stores"),
+    apiFetchServer<{
       themes: Array<{
         id: string;
         name: string;
@@ -26,19 +21,24 @@ export default async function LojaVirtualPage() {
         previewAccent: string;
         previewAccent2?: string;
       }>;
-    }>("/api/v1/themes");
-    if (data.themes?.length) {
-      themes = data.themes.map((t) => ({
-        id: t.id,
-        name: t.name,
-        tagline: t.tagline,
-        free: true as const,
-        previewAccent: t.previewAccent,
-        previewAccent2: t.previewAccent2,
-      }));
-    }
-  } catch {
-    /* keep local THEME_META */
+    }>("/api/v1/themes"),
+  ]);
+
+  if (storesResult.status === "fulfilled") {
+    stores = storesResult.value.stores ?? [];
+  }
+  if (
+    themesResult.status === "fulfilled" &&
+    themesResult.value.themes?.length
+  ) {
+    themes = themesResult.value.themes.map((t) => ({
+      id: t.id,
+      name: t.name,
+      tagline: t.tagline,
+      free: true as const,
+      previewAccent: t.previewAccent,
+      previewAccent2: t.previewAccent2,
+    }));
   }
 
   const primary = stores[0];
