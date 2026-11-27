@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { PanelShell } from "@/components/PanelShell";
-import { type StoreSummary } from "@/lib/api";
-import { apiFetchServer } from "@/lib/api-server";
+import { getPanelMe, getPanelStores } from "@/lib/panel-data";
 
 export default async function PainelLayout({
   children,
@@ -9,11 +8,10 @@ export default async function PainelLayout({
   children: React.ReactNode;
 }) {
   // Parallelize independent session + store lookups (was a serial waterfall).
+  // React.cache() dedupes with child pages that also call getPanelStores().
   const [meResult, storesResult] = await Promise.allSettled([
-    apiFetchServer<{ user: { name?: string; email?: string } | null }>(
-      "/api/v1/auth/me",
-    ),
-    apiFetchServer<{ stores: StoreSummary[] }>("/api/v1/stores"),
+    getPanelMe(),
+    getPanelStores(),
   ]);
 
   const user =

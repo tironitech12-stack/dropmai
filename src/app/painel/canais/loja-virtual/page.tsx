@@ -4,6 +4,7 @@ import { ThemeLibraryActivateButton } from "@/components/ThemeLibraryActivateBut
 import { ThemeThumb } from "@/components/ThemeThumb";
 import { type StoreSummary } from "@/lib/api";
 import { apiFetchServer } from "@/lib/api-server";
+import { getPanelStores } from "@/lib/panel-data";
 import {
   resolveAddedThemeIds,
   THEME_META,
@@ -15,8 +16,9 @@ export default async function LojaVirtualPage() {
   let stores: StoreSummary[] = [];
   let themes = THEME_META;
 
+  // Reuse layout's /stores via React.cache; fetch themes in parallel (no waterfall).
   const [storesResult, themesResult] = await Promise.allSettled([
-    apiFetchServer<{ stores: StoreSummary[] }>("/api/v1/stores"),
+    getPanelStores(),
     apiFetchServer<{
       themes: Array<{
         id: string;
