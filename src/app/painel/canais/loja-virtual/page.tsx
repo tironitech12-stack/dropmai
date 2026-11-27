@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeApplyButton } from "@/components/ThemeApplyButton";
+import { ThemeThumb } from "@/components/ThemeThumb";
 import { type StoreSummary } from "@/lib/api";
 import { apiFetchServer } from "@/lib/api-server";
 import { THEME_META, themeMeta } from "@/lib/themes";
@@ -135,8 +136,8 @@ export default async function LojaVirtualPage() {
             <div className="panel-section-head">
               <h2 id="descobrir-temas">Descobrir temas</h2>
               <p>
-                Seis estilos gratuitos — marca, minimal, B2B, boutique, street e
-                varejo solar. Depois personalize no editor.
+                {themes.length} estilos gratuitos com layout próprio — depois
+                personalize no editor Puck.
               </p>
             </div>
             <div className="dm-theme-grid">
@@ -145,13 +146,13 @@ export default async function LojaVirtualPage() {
                 const accent2 = theme.previewAccent2 || theme.previewAccent;
                 return (
                   <article key={theme.id} className="dm-theme-card">
-                    <div
-                      className="dm-theme-card-preview"
-                      style={{
-                        background: `linear-gradient(145deg, ${theme.previewAccent} 0%, ${accent2} 55%, #f8fafc 120%)`,
-                      }}
-                    >
-                      <span>{theme.name}</span>
+                    <div className="dm-theme-card-preview">
+                      <ThemeThumb
+                        themeId={theme.id}
+                        name={theme.name}
+                        accent={theme.previewAccent}
+                        accent2={accent2}
+                      />
                     </div>
                     <div className="dm-theme-card-body">
                       <strong>{theme.name}</strong>
