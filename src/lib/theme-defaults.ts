@@ -143,6 +143,74 @@ const PRESETS: Record<string, ThemePreset> = {
     ctaLabel: "Ver ofertas",
     footerText: "Solar · Dropmai",
   },
+  impeto: {
+    colors: {
+      primary: "#111111",
+      secondary: "#404040",
+      background: "#fafafa",
+      surface: "#ffffff",
+      text: "#0a0a0a",
+      muted: "#737373",
+    },
+    typography: {
+      heading: "ui-sans-serif, system-ui, sans-serif",
+      body: "ui-sans-serif, system-ui, sans-serif",
+    },
+    tagline: "ESSÊNCIA",
+    heroTitle: "PELE VIVA,",
+    heroSubtitle: "Curadoria bold para beleza e lifestyle com presença.",
+    announcement: "Leve 3 e ganhe 20% · Shop now",
+    featuredTitle: "Em cena",
+    featuredLimit: 8,
+    ctaLabel: "Explorar",
+    footerText: "Ímpeto · Dropmai",
+  },
+  trilha: {
+    colors: {
+      primary: "#171717",
+      secondary: "#dc2626",
+      background: "#f5f5f5",
+      surface: "#ffffff",
+      text: "#0a0a0a",
+      muted: "#525252",
+    },
+    typography: {
+      heading: "ui-sans-serif, system-ui, sans-serif",
+      body: "system-ui, -apple-system, Segoe UI, sans-serif",
+    },
+    tagline: "Performance",
+    heroTitle: "Pronto pra trilha",
+    heroSubtitle:
+      "Layout de outdoor: cards arredondados e foco na foto do produto.",
+    announcement: "Frete sob demanda · Peças em movimento",
+    featuredTitle: "Bikes & gear",
+    featuredLimit: 8,
+    ctaLabel: "Ver coleção",
+    footerText: "Trilha · Dropmai",
+  },
+  prateleira: {
+    colors: {
+      primary: "#ea580c",
+      secondary: "#0f172a",
+      background: "#ffffff",
+      surface: "#f8fafc",
+      text: "#0f172a",
+      muted: "#64748b",
+    },
+    typography: {
+      heading: "ui-sans-serif, system-ui, sans-serif",
+      body: "ui-sans-serif, system-ui, sans-serif",
+    },
+    tagline: "Milhares de SKUs",
+    heroTitle: "Top specs. Preço justo.",
+    heroSubtitle:
+      "Varejo de catálogo grande: benefícios, cupom e grade densa.",
+    announcement: "Frete sob demanda · Ajuda na compra · Aberto 7 dias",
+    featuredTitle: "Mais vendidos",
+    featuredLimit: 24,
+    ctaLabel: "Ver catálogo",
+    footerText: "Prateleira · Dropmai",
+  },
 };
 
 /** Client/SSR fallback when API omits themeSettings (legacy store). */

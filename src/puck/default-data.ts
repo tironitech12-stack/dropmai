@@ -28,6 +28,9 @@ export function buildDefaultPuckData(
   );
   const footer = settings?.home.sections.find((s) => s.type === "footer");
   const dense = isDenseTheme(themeId);
+  const isImpeto = themeId === "impeto";
+  const isTrilha = themeId === "trilha";
+  const isPrateleira = themeId === "prateleira";
 
   const content: DropmaiPuckData["content"] = [];
 
@@ -46,58 +49,89 @@ export function buildDefaultPuckData(
     });
   }
 
-  content.push(
-    {
-      type: "StoreHeader",
+  if (isPrateleira) {
+    content.push({
+      type: "BenefitStrip",
       props: {
-        id: uid("hdr"),
-        brandName: brand?.name || storeName,
-        showNav: true,
+        id: uid("ben"),
+        items:
+          "Frete sob demanda | Ajuda na compra | Troca facilitada | Aberto todo dia",
       },
-    },
-    {
-      type: "HeroSection",
+    });
+    content.push({
+      type: "PromoBar",
       props: {
-        id: uid("hero"),
-        eyebrow: brand?.tagline || "",
-        title: String(
-          hero?.props.title ||
-            fallback.home.sections.find((s) => s.type === "hero")?.props
-              .title ||
-            storeName,
-        ),
-        subtitle: String(
-          hero?.props.subtitle ||
-            fallback.home.sections.find((s) => s.type === "hero")?.props
-              .subtitle ||
-            "",
-        ),
-        ctaLabel: String(hero?.props.ctaLabel || "Ver produtos"),
-        ctaHref: String(hero?.props.ctaHref || "#produtos"),
+        id: uid("promo"),
+        text: "Flash da semana — copie o cupom",
+        code: "DROPMAI10",
       },
+    });
+  }
+
+  content.push({
+    type: "StoreHeader",
+    props: {
+      id: uid("hdr"),
+      brandName: brand?.name || storeName,
+      showNav: true,
     },
-    {
-      type: "FeaturedProducts",
+  });
+
+  content.push({
+    type: "HeroSection",
+    props: {
+      id: uid("hero"),
+      eyebrow: brand?.tagline || "",
+      title: String(
+        hero?.props.title ||
+          fallback.home.sections.find((s) => s.type === "hero")?.props.title ||
+          storeName,
+      ),
+      subtitle: String(
+        hero?.props.subtitle ||
+          fallback.home.sections.find((s) => s.type === "hero")?.props
+            .subtitle ||
+          "",
+      ),
+      ctaLabel: String(hero?.props.ctaLabel || "Ver produtos"),
+      ctaHref: String(hero?.props.ctaHref || "#produtos"),
+      overlay: isImpeto,
+    },
+  });
+
+  if (isTrilha) {
+    content.push({
+      type: "RichText",
       props: {
-        id: uid("feat"),
-        title: String(featured?.props.title || "Destaques"),
-        limit: Number(featured?.props.limit ?? 12) || 12,
-        dense,
+        id: uid("feat-copy"),
+        heading: "Em movimento",
+        body: "Destaques com cards amplos — ideal para outdoor, bike e performance.",
       },
+    });
+  }
+
+  content.push({
+    type: "FeaturedProducts",
+    props: {
+      id: uid("feat"),
+      title: String(featured?.props.title || "Destaques"),
+      limit: Number(featured?.props.limit ?? (isPrateleira ? 24 : 12)) || 12,
+      dense: dense || isPrateleira,
     },
-    {
-      type: "StoreFooter",
-      props: {
-        id: uid("ftr"),
-        text: String(
-          footer?.props.text ||
-            fallback.home.sections.find((s) => s.type === "footer")?.props
-              .text ||
-            "Loja powered by Dropmai",
-        ),
-      },
+  });
+
+  content.push({
+    type: "StoreFooter",
+    props: {
+      id: uid("ftr"),
+      text: String(
+        footer?.props.text ||
+          fallback.home.sections.find((s) => s.type === "footer")?.props
+            .text ||
+          "Loja powered by Dropmai",
+      ),
     },
-  );
+  });
 
   return {
     root: {

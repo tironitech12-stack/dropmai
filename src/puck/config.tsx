@@ -4,8 +4,10 @@ import type { CSSProperties } from "react";
 import type { Config } from "@puckeditor/core";
 import {
   AnnouncementBar,
+  BenefitStrip,
   FeaturedProducts,
   HeroSection,
+  PromoBar,
   RichText,
   StoreFooter,
   StoreHeader,
@@ -13,6 +15,8 @@ import {
 
 export type DropmaiPuckProps = {
   AnnouncementBar: { text: string };
+  PromoBar: { text: string; code: string };
+  BenefitStrip: { items: string };
   StoreHeader: { brandName: string; showNav: boolean };
   HeroSection: {
     eyebrow: string;
@@ -20,6 +24,7 @@ export type DropmaiPuckProps = {
     subtitle: string;
     ctaLabel: string;
     ctaHref: string;
+    overlay: boolean;
   };
   FeaturedProducts: { title: string; limit: number; dense: boolean };
   RichText: { heading: string; body: string };
@@ -133,7 +138,13 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
   categories: {
     layout: {
       title: "Layout",
-      components: ["AnnouncementBar", "StoreHeader", "StoreFooter"],
+      components: [
+        "AnnouncementBar",
+        "PromoBar",
+        "BenefitStrip",
+        "StoreHeader",
+        "StoreFooter",
+      ],
     },
     content: {
       title: "Conteúdo",
@@ -150,6 +161,32 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         text: "Frete calculado no checkout · Estoque com o fornecedor",
       },
       render: (props) => <AnnouncementBar {...props} />,
+    },
+    PromoBar: {
+      label: "Faixa de promoção",
+      fields: {
+        text: { type: "text", label: "Texto" },
+        code: { type: "text", label: "Cupom (opcional)" },
+      },
+      defaultProps: {
+        text: "Oferta relâmpago — use o cupom no checkout",
+        code: "DROPMAI10",
+      },
+      render: (props) => <PromoBar {...props} />,
+    },
+    BenefitStrip: {
+      label: "Benefícios",
+      fields: {
+        items: {
+          type: "textarea",
+          label: "Itens (separados por |)",
+        },
+      },
+      defaultProps: {
+        items:
+          "Frete sob demanda | Estoque no fornecedor | Troca facilitada | Suporte Dropmai",
+      },
+      render: (props) => <BenefitStrip {...props} />,
     },
     StoreHeader: {
       label: "Cabeçalho",
@@ -178,6 +215,14 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         subtitle: { type: "textarea", label: "Subtítulo" },
         ctaLabel: { type: "text", label: "Botão" },
         ctaHref: { type: "text", label: "Link do botão" },
+        overlay: {
+          type: "radio",
+          label: "Overlay full-bleed",
+          options: [
+            { label: "Não", value: false },
+            { label: "Sim", value: true },
+          ],
+        },
       },
       defaultProps: {
         eyebrow: "Loja Dropmai",
@@ -185,6 +230,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         subtitle: "Produtos Xnamai publicados com o seu markup.",
         ctaLabel: "Ver produtos",
         ctaHref: "#produtos",
+        overlay: false,
       },
       render: (props) => <HeroSection {...props} />,
     },

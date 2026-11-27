@@ -10,6 +10,41 @@ export function AnnouncementBar({ text }: { text: string }) {
   return <div className="dm-announce">{text}</div>;
 }
 
+export function PromoBar({
+  text,
+  code,
+}: {
+  text: string;
+  code: string;
+}) {
+  return (
+    <div className="dm-promo-bar">
+      <span>{text}</span>
+      {code ? <code className="dm-promo-code">{code}</code> : null}
+    </div>
+  );
+}
+
+export function BenefitStrip({
+  items,
+}: {
+  items: string;
+}) {
+  const list = String(items || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  if (!list.length) return null;
+  return (
+    <ul className="dm-benefit-strip" aria-label="Benefícios">
+      {list.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
 export function StoreHeader({
   brandName,
   showNav,
@@ -42,15 +77,17 @@ export function HeroSection({
   subtitle,
   ctaLabel,
   ctaHref,
+  overlay,
 }: {
   eyebrow: string;
   title: string;
   subtitle: string;
   ctaLabel: string;
   ctaHref: string;
+  overlay?: boolean;
 }) {
   return (
-    <section className="dm-hero">
+    <section className={`dm-hero${overlay ? " is-overlay" : ""}`}>
       <div className="dm-hero-copy">
         {eyebrow ? <p className="dm-eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
