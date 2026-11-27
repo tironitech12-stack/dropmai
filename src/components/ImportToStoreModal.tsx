@@ -8,6 +8,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { createPortal } from "react-dom";
 import { apiFetch, type StoreSummary } from "@/lib/api";
 import { XnamaiProductThumb } from "@/components/XnamaiProductThumb";
 
@@ -46,7 +47,7 @@ const GAP = 8;
 
 function computePanelStyle(anchor: DOMRect | null): CSSProperties {
   if (typeof window === "undefined") {
-    return { position: "fixed", top: 80, left: 24, width: PANEL_WIDTH };
+    return { top: 80, left: 24, width: PANEL_WIDTH };
   }
 
   const vw = window.innerWidth;
@@ -56,7 +57,6 @@ function computePanelStyle(anchor: DOMRect | null): CSSProperties {
   // Mobile / narrow: dock near bottom of viewport (still not page-center modal).
   if (vw < 640 || !anchor) {
     return {
-      position: "fixed",
       left: 12,
       right: 12,
       bottom: 12,
@@ -76,7 +76,6 @@ function computePanelStyle(anchor: DOMRect | null): CSSProperties {
   if (preferBelow) {
     const top = Math.min(anchor.bottom + GAP, vh - 120);
     return {
-      position: "fixed",
       top,
       left,
       width,
@@ -87,7 +86,6 @@ function computePanelStyle(anchor: DOMRect | null): CSSProperties {
   const maxHeight = Math.min(PANEL_MAX_HEIGHT, Math.max(220, spaceAbove));
   const top = Math.max(12, anchor.top - GAP - maxHeight);
   return {
-    position: "fixed",
     top,
     left,
     width,
@@ -114,9 +112,14 @@ export function ImportToStoreModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [panelStyle, setPanelStyle] = useState<CSSProperties>(() =>
     computePanelStyle(anchorRect),
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -158,14 +161,17 @@ export function ImportToStoreModal({
 
   useEffect(() => {
     if (!open) return;
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    const onPointer = (e: MouseEvent | TouchEvent) => {
+
+    // pointerdown in bubble phase (not capture) so the opening click on the
+    // button finishes first; ignore events inside the panel or its anchor.
+    const onPointer = (e: PointerEvent) => {
       const target = e.target as Node | null;
       if (!target) return;
       if (panelRef.current?.contains(target)) return;
-      // Keep open when clicking the same card's import button (handled by toggle).
       if (
         target instanceof Element &&
         target.closest(`[data-import-anchor="${product.id}"]`)
@@ -174,11 +180,12 @@ export function ImportToStoreModal({
       }
       onClose();
     };
+
     window.addEventListener("keydown", onKey);
-    window.addEventListener("mousedown", onPointer);
+    window.addEventListener("pointerdown", onPointer);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("mousedown", onPointer);
+      window.removeEventListener("pointerdown", onPointer);
     };
   }, [open, onClose, product.id]);
 
@@ -197,7 +204,7 @@ export function ImportToStoreModal({
 
   const profit = useMemo(() => round2(sellPrice - cost), [sellPrice, cost]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   async function submit() {
     setError(null);
@@ -251,7 +258,7 @@ export function ImportToStoreModal({
     }
   }
 
-  return (
+  const panel = (
     <div
       ref={panelRef}
       className="xn-import-popover"
@@ -405,6 +412,10 @@ export function ImportToStoreModal({
       </footer>
     </div>
   );
+
+  // Portal escapes PanelShell `.fade-up` / overflow parents so fixed coords
+  // are viewport-relative and the panel is not clipped by the product card.
+  return createPortal(panel, document.body);
 }
 
 export function ImportToStoreButton({ product }: { product: ImportableProduct }) {

@@ -139,22 +139,50 @@ export function PuckThemeEditor({ storeId }: Props) {
     [settings, store, storeId],
   );
 
+  // Always portal the shell so opening never paints inside PanelShell
+  // `.fade-up` (transform traps position:fixed / collapses the layout).
+  if (!mounted) {
+    return null;
+  }
+
   if (loading) {
-    return (
-      <main className="panel-page">
-        <p className="panel-muted-note">Carregando editor Puck…</p>
-      </main>
+    return createPortal(
+      <div className="dm-puck-shell" role="status" aria-label="Carregando editor">
+        <div className="dm-puck-topbar">
+          <div>
+            <Link href="/painel/canais/loja-virtual" className="panel-text-link">
+              ← Loja virtual
+            </Link>
+            <strong>Carregando editor Puck…</strong>
+          </div>
+        </div>
+        <div className="dm-puck-canvas" style={{ placeItems: "center", display: "grid" }}>
+          <p className="panel-muted-note">Abrindo editor…</p>
+        </div>
+      </div>,
+      document.body,
     );
   }
 
   if (!store || !data) {
-    return (
-      <main className="panel-page">
-        <p className="panel-alert">{error || "Loja não encontrada"}</p>
-        <Link href="/painel/canais/loja-virtual" className="btn btn-secondary">
-          Voltar
-        </Link>
-      </main>
+    return createPortal(
+      <div className="dm-puck-shell" role="alert">
+        <div className="dm-puck-topbar">
+          <div>
+            <Link href="/painel/canais/loja-virtual" className="panel-text-link">
+              ← Loja virtual
+            </Link>
+            <strong>Editor indisponível</strong>
+          </div>
+        </div>
+        <div className="dm-puck-canvas" style={{ placeItems: "center", display: "grid", gap: "1rem" }}>
+          <p className="panel-alert">{error || "Loja não encontrada"}</p>
+          <Link href="/painel/canais/loja-virtual" className="btn btn-secondary">
+            Voltar
+          </Link>
+        </div>
+      </div>,
+      document.body,
     );
   }
 
@@ -198,16 +226,6 @@ export function PuckThemeEditor({ storeId }: Props) {
       </div>
     </div>
   );
-
-  // Portal escapes PanelShell `.fade-up` transform, which otherwise traps
-  // position:fixed and collapses the editor into the 960px content column.
-  if (!mounted) {
-    return (
-      <main className="panel-page">
-        <p className="panel-muted-note">Abrindo editor…</p>
-      </main>
-    );
-  }
 
   return createPortal(editor, document.body);
 }
