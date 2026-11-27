@@ -244,51 +244,52 @@ export function blueprintBlocks(
 
   switch (themeId) {
     case "impeto":
+      // Crush energy — CAPS overlay + dark announce + marquee + promo
       return [
-        ann("Kit beleza · Frete sob demanda · DROPMAI"),
-        marquee("PELE VIVA · ESTÉTICA BOLD · XNAMAI"),
+        ann("KIT BELEZA · FRETE SOB DEMANDA · DROPMAI"),
+        promo("FLASH BELEZA — cupom da semana", "IMPACTO10"),
+        marquee("PELE VIVA · ESTÉTICA BOLD · APARADORES · MASSAGEADORES · XNAMAI"),
         hdr(brand),
         hero(c, {
           title: "PELE VIVA,",
-          subtitle: "Curadoria bold para estética e cuidados com aparência.",
-          cta: "Explorar",
+          subtitle: "CURADORIA BOLD PARA ESTÉTICA E CUIDADOS COM APARÊNCIA.",
+          cta: "EXPLORAR",
           overlay: true,
-          eyebrow: "Beleza / estética",
+          eyebrow: "BELEZA / ESTÉTICA",
         }),
-        tiles(c, "Categorias beleza", "Estética | Barbeador | Massageador | Relógios"),
-        featured(c, "Em cena", 8),
-        promoTiles(c, "Aparadores", "Linha bold", "Massageadores", "Recuperação"),
-        testimonials(
-          "Quem usa",
-          "Acabamento impecável|Ana||Entrega rápida e produto top|Bruno",
-        ),
-        footer("Ímpeto · Dropmai"),
+        collage(c, "CENA BOLD", "Estética | Aparador | Massageador"),
+        promoTiles(c, "APARADORES", "Linha bold", "MASSAGEADORES", "Recuperação"),
+        featured(c, "EM CENA", 8),
+        newsletter("DROP ÍMPETO", "Avisos CAPS de beleza e estética Xnamai."),
+        footer("Ímpeto · Dropmai · ref Crush"),
       ];
     case "trilha":
-      // Ride free-ref — outdoor energy + video poster
+      // Ride free-ref — marquee energy + video poster + outdoor
       return [
         ann("Camping · Esporte · Frete sob demanda"),
+        marquee("TRAIL · BIKE · CAMPING · MOBILIDADE · RIDE ENERGY"),
         mega(brand, "Camping|Esporte|Bike|Mobilidade"),
         hero(c, {
           title: "Pronto pra trilha",
-          subtitle: "Cards amplos para outdoor, bike e mobilidade Xnamai.",
+          subtitle: "Foto ampla e energia outdoor para bike, camping e esporte Xnamai.",
           cta: "Ver coleção",
+          overlay: true,
+          eyebrow: "Outdoor · Ride",
         }),
-        tiles(c, "Terrenos", "Camping | Esporte | Bike | Mobilidade"),
         video(
           c,
           "No ritmo da trilha",
-          "Poster cinematográfico — inspirado em Ride (Shopify free), first-party Dropmai.",
+          "Poster cinematográfico — vocabulário Ride (Shopify free), first-party Dropmai.",
           "Ver outdoor",
         ),
+        tiles(c, "Terrenos", "Camping | Esporte | Bike | Mobilidade"),
         promoTiles(c, "Bike week", "Acessórios leves", "Camping kit", "Noite sob as estrelas"),
         featured(c, "Em movimento", 8),
-        trust("Frete sob demanda:checkout|Estoque Xnamai:fornecedor|Troca fácil:7 dias|Suporte:chat"),
         newsletter("Drops outdoor", "Avisos de camping, bike e mobilidade."),
         footer("Trilha · Dropmai · ref Ride"),
       ];
     case "prateleira":
-      // Refresh free-ref — clean retail + collage + newsletter
+      // Refresh/Enterprise — promo + benefits + dense catalog + collage + FAQ
       return [
         promo("Flash da semana — copie o cupom", "DROPMAI10"),
         benefits(
@@ -303,7 +304,6 @@ export function blueprintBlocks(
         tiles(c, "Departamentos", "Celular | Casa | Informática | Energia"),
         collage(c, "Vitrine Refresh", "Celular | Casa | Energia"),
         featured(c, "Mais vendidos", 24, true),
-        row("Tendências da semana", 4),
         faq(
           "Ajuda na compra",
           "Como funciona o frete?|Calculado no checkout com o fornecedor.||Posso trocar?|Sim, política da loja + suporte Dropmai.",
@@ -312,7 +312,7 @@ export function blueprintBlocks(
         footer("Prateleira · Dropmai · ref Refresh"),
       ];
     case "editorial":
-      // Sense free-ref — soft lifestyle collage + newsletter
+      // Sense/Gain — lookbook + ImageWithText + ShopTheLook + collage + newsletter
       return [
         ann("Edição da semana · Frete sob demanda"),
         hdr(brand),
@@ -321,12 +321,13 @@ export function blueprintBlocks(
           subtitle: "Lookbook para beleza e lifestyle com produtos Xnamai.",
           cta: "Abrir lookbook",
           overlay: true,
+          eyebrow: "Editorial · Sense",
         }),
         collage(c, "Mood Sense", "Pele | Luz | Textura"),
+        iwt(c, "História da marca", "Combine foto lifestyle com o markup da sua loja — Gain/Sense first-party.", "left", 0),
         tiles(c, "Coleções", "Estética | Luminárias | Bolsas | Decoração"),
-        iwt(c, "História da marca", "Combine foto lifestyle com o markup da sua loja.", "left", 0),
-        featured(c, "Em vitrine", 8),
         stl("Monte o look", "Pins nos produtos publicados da vitrine."),
+        featured(c, "Em vitrine", 8),
         newsletter("Edição por e-mail", "Lookbooks e drops de beleza."),
         footer("Editorial · Dropmai · ref Sense"),
       ];
@@ -384,13 +385,13 @@ export function blueprintBlocks(
         footer("Seixo · Dropmai · ref Craft"),
       ];
     case "focal":
-      // Dawn free-ref — full OS 2.0 section vocabulary
+      // Dawn free-ref — announcement + mega + banner + collection + collage + featured + video + newsletter
       return [
         ann("Celular em close · Capas, películas e gadgets"),
         mega(brand, "Capas|Películas|Cabos|Suportes|Energia"),
         hero(c, {
           title: "Produto em foco",
-          subtitle: "Hero fotográfico para acessórios de celular Xnamai.",
+          subtitle: "Hero fotográfico full-bleed para acessórios de celular Xnamai.",
           cta: "Ver capas",
           overlay: true,
           eyebrow: "Focal · Dawn",
@@ -398,10 +399,16 @@ export function blueprintBlocks(
         tiles(c, "Acessórios", "Capas | Películas | Cabos | Suportes"),
         collage(c, "Colagem Dawn", "Capas | Películas | Cabos"),
         featured(c, "Em destaque", 8),
-        promoTiles(c, "MagSafe", "Linha magnética", "Película nano", "Proteção total"),
-        video(
+        iwt(
           c,
           "Close que vende",
+          "Image-with-text no vocabulário Dawn — multirow first-party Dropmai.",
+          "right",
+          2,
+        ),
+        video(
+          c,
+          "Detalhe em movimento",
           "Seção de vídeo/poster no estilo Dawn — first-party Dropmai.",
           "Ver capas",
         ),
@@ -577,26 +584,27 @@ export function blueprintBlocks(
         footer("Impecável · Dropmai · ref Sense"),
       ];
     case "oficina":
-      // Craft free-ref — handmade / tools
+      // Craft/Tinker — industrial collage + video + dense tools
       return [
         ann("Ferramentas · B-Tek · DIY"),
-        marquee("OFICINA · FERRAMENTAS · PRECISION · XNAMAI"),
+        marquee("OFICINA · FERRAMENTAS · PRECISION · B-TEK · XNAMAI"),
         mega(brand, "Chaves|Lanternas|Medição|Maletas"),
         hero(c, {
           title: "Mão na massa",
-          subtitle: "Industrial reto para ferramentas e utilidades técnicas.",
+          subtitle: "Industrial reto para ferramentas e utilidades técnicas Xnamai.",
           cta: "Abrir oficina",
           overlay: true,
+          eyebrow: "Oficina · Craft",
         }),
-        benefits("Reto | Amarelo ferramenta | Preço claro | Estoque Xnamai"),
+        collage(c, "Bancada Craft", "Chaves | Lanterna | Maleta"),
         video(
           c,
           "Oficina em ação",
-          "Poster Craft — ferramentas com história, first-party Dropmai.",
+          "Poster Craft/Tinker — ferramentas densas com história, first-party Dropmai.",
           "Ver kits",
         ),
-        featured(c, "Bancada", 12, true),
-        collage(c, "Bancada Craft", "Chaves | Lanterna | Maleta"),
+        tiles(c, "Ferramentas", "Chaves | Lanternas | Medição | Maletas"),
+        featured(c, "Bancada", 16, true),
         newsletter("DIY semanal", "Kits e lanternas B-Tek."),
         footer("Oficina · Dropmai · ref Craft"),
       ];

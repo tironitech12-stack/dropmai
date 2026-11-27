@@ -25,11 +25,31 @@ function layoutFor(themeId: string): ThemeLayout {
   return "standard";
 }
 
+/** Stack cues so thumbs mirror blueprint structure (not just colors). */
+function stackCues(themeId: string) {
+  return {
+    marquee: ["impeto", "trilha", "faisca", "impacto", "urbano", "oficina", "extra"].includes(
+      themeId,
+    ),
+    collage: ["focal", "editorial", "prateleira", "oficina", "amplia", "seixo", "impecavel"].includes(
+      themeId,
+    ),
+    dense: ["prateleira", "deposito", "oficina", "catalogo"].includes(themeId),
+    lookbook: ["editorial", "impecavel", "boutique"].includes(themeId),
+    video: ["trilha", "focal", "oficina", "impacto", "amplia"].includes(themeId),
+    promo: ["prateleira", "impeto", "faisca", "extra"].includes(themeId),
+    hideTiles: ["minimal", "monge", "conceito", "deposito"].includes(themeId),
+    caps: themeId === "impeto",
+    overlayCopy: ["impeto", "oficina", "impacto", "amplia", "faisca"].includes(themeId),
+  };
+}
+
 /** Lifestyle mini-storefront using niche hero + product strips. */
 export function ThemeThumb({ themeId, name }: Props) {
   const settings = buildDefaultSettingsClient(themeId, name);
   const layout = layoutFor(themeId);
   const niche = nicheForTheme(themeId);
+  const cues = stackCues(themeId);
   const hero = settings.home.sections.find((s) => s.type === "hero");
   const heroTitle =
     typeof hero?.props.title === "string" ? String(hero.props.title) : name;
@@ -40,16 +60,13 @@ export function ThemeThumb({ themeId, name }: Props) {
       ? String(hero.props.ctaLabel)
       : "Ver produtos";
   const heroImg = themeHeroImage(themeId);
-  const tiles = themeTileImages(themeId, 3);
-  const showMarquee = ["impeto", "faisca", "impacto", "urbano", "oficina", "extra"].includes(
-    themeId,
-  );
-  const showTiles = !["minimal", "monge", "conceito", "deposito"].includes(themeId);
+  const tiles = themeTileImages(themeId, cues.dense ? 4 : 3);
 
   return (
     <div
-      className={`dm-thumb dm-thumb--photo dm-thumb--${layout}`}
+      className={`dm-thumb dm-thumb--photo dm-thumb--${layout}${cues.caps ? " dm-thumb--caps" : ""}${cues.lookbook ? " dm-thumb--lookbook" : ""}${cues.dense ? " dm-thumb--dense" : ""}`}
       data-niche={niche}
+      data-theme={themeId}
       style={
         {
           "--thumb-primary": settings.colors.primary,
@@ -64,7 +81,8 @@ export function ThemeThumb({ themeId, name }: Props) {
       }
       aria-hidden
     >
-      {showMarquee ? <div className="dm-thumb-announce">{niche}</div> : null}
+      {cues.promo ? <div className="dm-thumb-promo">FLASH</div> : null}
+      {cues.marquee ? <div className="dm-thumb-announce">{niche}</div> : null}
       <header className="dm-thumb-header">
         <span className="dm-thumb-brand">{name}</span>
         <nav className="dm-thumb-nav">
@@ -75,7 +93,7 @@ export function ThemeThumb({ themeId, name }: Props) {
       </header>
 
       <section
-        className="dm-thumb-hero is-photo"
+        className={`dm-thumb-hero is-photo${cues.overlayCopy ? " is-overlay-copy" : ""}`}
         style={{
           backgroundImage: `linear-gradient(105deg, color-mix(in srgb, var(--thumb-secondary) 55%, transparent) 0%, rgba(0,0,0,0.2) 50%, transparent 100%), url(${heroImg})`,
         }}
@@ -87,8 +105,10 @@ export function ThemeThumb({ themeId, name }: Props) {
         </div>
       </section>
 
-      {showTiles ? (
-        <div className="dm-thumb-tiles">
+      {cues.video ? <div className="dm-thumb-video" /> : null}
+
+      {!cues.hideTiles ? (
+        <div className={`dm-thumb-tiles${cues.collage ? " is-collage" : ""}`}>
           {tiles.map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={src} className="dm-thumb-tile-img" src={src} alt="" data-i={i} />
@@ -97,7 +117,7 @@ export function ThemeThumb({ themeId, name }: Props) {
       ) : null}
 
       <div className="dm-thumb-featured">
-        <div className="dm-thumb-products">
+        <div className={`dm-thumb-products${cues.dense ? " is-dense" : ""}`}>
           {tiles.map((src) => (
             <article key={`p-${src}`} className="dm-thumb-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
