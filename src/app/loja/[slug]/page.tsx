@@ -87,9 +87,24 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
     store.themeSettings ??
     buildDefaultSettingsClient(themeId, store.name, store.logoUrl);
 
-  const puckData: DropmaiPuckData = isPuckData(settings.puck)
+  const rawPuck: DropmaiPuckData = isPuckData(settings.puck)
     ? (settings.puck as DropmaiPuckData)
     : buildDefaultPuckData(store.name, themeId, settings);
+
+  const puckData: DropmaiPuckData = {
+    ...rawPuck,
+    root: {
+      ...rawPuck.root,
+      props: {
+        ...rawPuck.root.props,
+        themeId: rawPuck.root.props?.themeId || themeId,
+        bodyFont:
+          rawPuck.root.props?.bodyFont ||
+          settings.typography.body ||
+          "system-ui, -apple-system, Segoe UI, sans-serif",
+      },
+    },
+  };
 
   // Prefer Puck layout whenever we have structured page data.
   if (isPuckData(puckData)) {

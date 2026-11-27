@@ -27,6 +27,7 @@ export type DropmaiPuckProps = {
 };
 
 export type DropmaiRootProps = {
+  themeId: string;
   primary: string;
   secondary: string;
   background: string;
@@ -34,11 +35,13 @@ export type DropmaiRootProps = {
   text: string;
   muted: string;
   headingFont: string;
+  bodyFont: string;
 };
 
 export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
   root: {
     fields: {
+      themeId: { type: "text", label: "ID do tema" },
       primary: { type: "text", label: "Cor primária" },
       secondary: { type: "text", label: "Cor secundária" },
       background: { type: "text", label: "Fundo" },
@@ -54,6 +57,10 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
             value: 'Georgia, "Times New Roman", serif',
           },
           {
+            label: "Palatino",
+            value: '"Palatino Linotype", Palatino, Georgia, serif',
+          },
+          {
             label: "System sans",
             value: "system-ui, -apple-system, Segoe UI, sans-serif",
           },
@@ -61,21 +68,45 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
             label: "UI sans",
             value: "ui-sans-serif, system-ui, sans-serif",
           },
+          {
+            label: "Friendly sans",
+            value: '"Trebuchet MS", "Segoe UI", sans-serif',
+          },
+        ],
+      },
+      bodyFont: {
+        type: "select",
+        label: "Fonte do corpo",
+        options: [
+          {
+            label: "System sans",
+            value: "system-ui, -apple-system, Segoe UI, sans-serif",
+          },
+          {
+            label: "UI sans",
+            value: "ui-sans-serif, system-ui, sans-serif",
+          },
+          {
+            label: "Serif",
+            value: 'Georgia, "Times New Roman", serif',
+          },
         ],
       },
     },
     defaultProps: {
-      primary: "#0f8a6b",
-      secondary: "#0a5c49",
-      background: "#f4f7f9",
+      themeId: "vitrine",
+      primary: "#0d9488",
+      secondary: "#134e4a",
+      background: "#f0f7f6",
       surface: "#ffffff",
-      text: "#15202b",
-      muted: "#5b6b7c",
+      text: "#134e4a",
+      muted: "#5b7c78",
       headingFont: 'Georgia, "Times New Roman", serif',
+      bodyFont: "system-ui, -apple-system, Segoe UI, sans-serif",
     },
     render: ({ children, ...root }) => (
       <div
-        className="dm-store"
+        className={`dm-store dm-theme-${root.themeId || "vitrine"}`}
         style={
           {
             "--dm-primary": root.primary,
@@ -86,6 +117,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
             "--dm-muted": root.muted,
             "--dm-font-heading": root.headingFont,
             "--dm-font-body":
+              root.bodyFont ||
               "system-ui, -apple-system, Segoe UI, sans-serif",
             minHeight: "100%",
             background: "var(--dm-bg)",

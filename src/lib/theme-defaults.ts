@@ -1,80 +1,182 @@
 import type { ThemeSettings } from "@/lib/themes";
 
-/** Client/SSR fallback when API omits themeSettings (legacy store). */
-export function buildDefaultSettingsClient(
-  themeId: string,
-  storeName: string,
-  logoUrl?: string | null,
-): ThemeSettings {
-  const presets: Record<string, ThemeSettings["colors"]> = {
-    vitrine: {
-      primary: "#0f8a6b",
-      secondary: "#0a5c49",
-      background: "#f4f7f9",
+type ThemePreset = {
+  colors: ThemeSettings["colors"];
+  typography: ThemeSettings["typography"];
+  tagline: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  announcement: string;
+  announcementEnabled?: boolean;
+  featuredTitle?: string;
+  featuredLimit?: number;
+  ctaLabel?: string;
+  footerText?: string;
+};
+
+const PRESETS: Record<string, ThemePreset> = {
+  vitrine: {
+    colors: {
+      primary: "#0d9488",
+      secondary: "#134e4a",
+      background: "#f0f7f6",
       surface: "#ffffff",
-      text: "#15202b",
-      muted: "#5b6b7c",
+      text: "#134e4a",
+      muted: "#5b7c78",
     },
-    minimal: {
-      primary: "#1c1917",
-      secondary: "#44403c",
+    typography: {
+      heading: 'Georgia, "Times New Roman", serif',
+      body: "system-ui, -apple-system, Segoe UI, sans-serif",
+    },
+    tagline: "Loja própria",
+    heroTitle: "Novidades da sua vitrine",
+    heroSubtitle:
+      "Publique do catálogo Xnamai e venda no seu domínio com a sua marca.",
+    announcement: "Novidades toda semana · Frete no checkout",
+    ctaLabel: "Explorar vitrine",
+  },
+  minimal: {
+    colors: {
+      primary: "#292524",
+      secondary: "#57534e",
       background: "#fafaf9",
       surface: "#ffffff",
       text: "#1c1917",
       muted: "#78716c",
     },
-    catalogo: {
-      primary: "#1d4ed8",
+    typography: {
+      heading: "system-ui, -apple-system, Segoe UI, sans-serif",
+      body: "system-ui, -apple-system, Segoe UI, sans-serif",
+    },
+    tagline: "",
+    heroTitle: "Seleção",
+    heroSubtitle: "Objetiva. Sem ruído. Só o essencial.",
+    announcement: "Envio sob demanda",
+    announcementEnabled: false,
+    featuredTitle: "Catálogo",
+    ctaLabel: "Ver tudo",
+  },
+  catalogo: {
+    colors: {
+      primary: "#2563eb",
       secondary: "#1e3a8a",
       background: "#eef2ff",
       surface: "#ffffff",
       text: "#0f172a",
       muted: "#64748b",
     },
-  };
+    typography: {
+      heading: "ui-sans-serif, system-ui, sans-serif",
+      body: "ui-sans-serif, system-ui, sans-serif",
+    },
+    tagline: "Atacado e varejo",
+    heroTitle: "Pronto para pedir",
+    heroSubtitle:
+      "Lista compacta com preço da sua loja sobre o custo do fornecedor.",
+    announcement: "Estoque atualizado com o fornecedor",
+    featuredTitle: "Lista de produtos",
+    featuredLimit: 24,
+    ctaLabel: "Ver catálogo",
+  },
+  boutique: {
+    colors: {
+      primary: "#9f1239",
+      secondary: "#881337",
+      background: "#fff5f8",
+      surface: "#ffffff",
+      text: "#4c0519",
+      muted: "#9f6b7c",
+    },
+    typography: {
+      heading: '"Palatino Linotype", Palatino, Georgia, serif',
+      body: 'Georgia, "Times New Roman", serif',
+    },
+    tagline: "Coleção da temporada",
+    heroTitle: "Peças com presença",
+    heroSubtitle: "Curadoria visual para marcas que querem parecer boutique.",
+    announcement: "Edição limitada · Envio cuidadoso",
+    featuredTitle: "Em destaque",
+    featuredLimit: 8,
+    ctaLabel: "Ver coleção",
+    footerText: "Boutique powered by Dropmai",
+  },
+  urbano: {
+    colors: {
+      primary: "#fb923c",
+      secondary: "#ea580c",
+      background: "#0a0a0a",
+      surface: "#171717",
+      text: "#fafafa",
+      muted: "#a3a3a3",
+    },
+    typography: {
+      heading: "ui-sans-serif, system-ui, sans-serif",
+      body: "ui-sans-serif, system-ui, sans-serif",
+    },
+    tagline: "Drop semanal",
+    heroTitle: "Novo drop",
+    heroSubtitle: "Peças com atitude. Markup seu. Estoque no fornecedor.",
+    announcement: "Restock alert · Frete no checkout",
+    featuredTitle: "No radar",
+    ctaLabel: "Shop now",
+    footerText: "Urbano · Dropmai",
+  },
+  solar: {
+    colors: {
+      primary: "#ea580c",
+      secondary: "#c2410c",
+      background: "#fff7ed",
+      surface: "#ffffff",
+      text: "#7c2d12",
+      muted: "#b45309",
+    },
+    typography: {
+      heading: '"Trebuchet MS", "Segoe UI", sans-serif',
+      body: "system-ui, -apple-system, Segoe UI, sans-serif",
+    },
+    tagline: "Feito para o dia a dia",
+    heroTitle: "Achados com sol",
+    heroSubtitle:
+      "Vitrine quente e amigável para quem vende volume no varejo.",
+    announcement: "Ofertas da semana · Entrega sob demanda",
+    featuredTitle: "Mais pedidos",
+    ctaLabel: "Ver ofertas",
+    footerText: "Solar · Dropmai",
+  },
+};
 
-  const colors = presets[themeId] ?? presets.vitrine;
+/** Client/SSR fallback when API omits themeSettings (legacy store). */
+export function buildDefaultSettingsClient(
+  themeId: string,
+  storeName: string,
+  logoUrl?: string | null,
+): ThemeSettings {
+  const preset = PRESETS[themeId] ?? PRESETS.vitrine;
 
   return {
     brand: {
       name: storeName,
       logoUrl: logoUrl ?? null,
-      tagline: themeId === "minimal" ? "" : "Loja Dropmai",
+      tagline: preset.tagline,
     },
-    colors,
-    typography: {
-      heading:
-        themeId === "vitrine"
-          ? 'Georgia, "Times New Roman", serif'
-          : "system-ui, -apple-system, Segoe UI, sans-serif",
-      body: "system-ui, -apple-system, Segoe UI, sans-serif",
-    },
+    colors: preset.colors,
+    typography: preset.typography,
     home: {
       sections: [
         {
           id: "announcement",
           type: "announcement",
-          enabled: true,
-          props: {
-            text: "Frete calculado no checkout · Estoque com o fornecedor",
-          },
+          enabled: preset.announcementEnabled ?? true,
+          props: { text: preset.announcement },
         },
         {
           id: "hero",
           type: "hero",
           enabled: true,
           props: {
-            title:
-              themeId === "minimal"
-                ? "Catálogo"
-                : themeId === "catalogo"
-                  ? "Pronto para pedir"
-                  : "Novidades da sua vitrine",
-            subtitle:
-              themeId === "minimal"
-                ? "Seleção objetiva. Sem ruído."
-                : "Produtos Xnamai publicados com o seu markup.",
-            ctaLabel: "Ver produtos",
+            title: preset.heroTitle,
+            subtitle: preset.heroSubtitle,
+            ctaLabel: preset.ctaLabel ?? "Ver produtos",
             ctaHref: "#produtos",
             imageUrl: "",
           },
@@ -83,13 +185,18 @@ export function buildDefaultSettingsClient(
           id: "featured_products",
           type: "featured_products",
           enabled: true,
-          props: { title: "Destaques", limit: 12 },
+          props: {
+            title: preset.featuredTitle ?? "Destaques",
+            limit: preset.featuredLimit ?? 12,
+          },
         },
         {
           id: "footer",
           type: "footer",
           enabled: true,
-          props: { text: "Loja powered by Dropmai" },
+          props: {
+            text: preset.footerText ?? "Loja powered by Dropmai",
+          },
         },
       ],
     },

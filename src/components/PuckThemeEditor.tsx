@@ -40,12 +40,27 @@ export function PuckThemeEditor({ storeId }: Props) {
       .then((res) => {
         if (cancelled) return;
         const s = res.store;
+        const themeId = s.themeId || "vitrine";
         const nextSettings =
           s.themeSettings ??
-          buildDefaultSettingsClient(s.themeId || "vitrine", s.name, s.logoUrl);
-        const puck = isPuckData(nextSettings.puck)
+          buildDefaultSettingsClient(themeId, s.name, s.logoUrl);
+        const raw = isPuckData(nextSettings.puck)
           ? (nextSettings.puck as DropmaiPuckData)
-          : buildDefaultPuckData(s.name, s.themeId || "vitrine", nextSettings);
+          : buildDefaultPuckData(s.name, themeId, nextSettings);
+        const puck: DropmaiPuckData = {
+          ...raw,
+          root: {
+            ...raw.root,
+            props: {
+              ...raw.root.props,
+              themeId: raw.root.props?.themeId || themeId,
+              bodyFont:
+                raw.root.props?.bodyFont ||
+                nextSettings.typography.body ||
+                "system-ui, -apple-system, Segoe UI, sans-serif",
+            },
+          },
+        };
         setStore(s);
         setSettings(nextSettings);
         setData(puck);
@@ -103,8 +118,8 @@ export function PuckThemeEditor({ storeId }: Props) {
           muted: rootProps.muted || settings.colors.muted,
         },
         typography: {
-          ...settings.typography,
           heading: rootProps.headingFont || settings.typography.heading,
+          body: rootProps.bodyFont || settings.typography.body,
         },
         puck: next,
       };
