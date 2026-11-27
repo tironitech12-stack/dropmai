@@ -3,6 +3,7 @@ import type { DropmaiPuckProps, DropmaiRootProps } from "@/puck/config";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
 import type { ThemeSettings } from "@/lib/themes";
 import { isDenseTheme } from "@/lib/themes";
+import { thematicById } from "@/lib/thematic-presets";
 
 export type DropmaiPuckData = Data<DropmaiPuckProps, DropmaiRootProps>;
 
@@ -27,7 +28,8 @@ export function buildDefaultPuckData(
     (s) => s.type === "featured_products",
   );
   const footer = settings?.home.sections.find((s) => s.type === "footer");
-  const dense = isDenseTheme(themeId);
+  const thematic = thematicById(themeId);
+  const dense = isDenseTheme(themeId) || Boolean(thematic?.dense);
 
   const content: DropmaiPuckData["content"] = [];
 
@@ -46,58 +48,130 @@ export function buildDefaultPuckData(
     });
   }
 
-  content.push(
-    {
-      type: "StoreHeader",
+  if (thematic?.benefits) {
+    content.push({
+      type: "BenefitStrip",
+      props: { id: uid("ben"), items: thematic.benefits },
+    });
+  }
+
+  if (thematic?.promoText) {
+    content.push({
+      type: "PromoBar",
       props: {
-        id: uid("hdr"),
-        brandName: brand?.name || storeName,
-        showNav: true,
+        id: uid("promo"),
+        text: thematic.promoText,
+        code: thematic.promoCode || "",
       },
+    });
+  }
+
+  content.push({
+    type: "StoreHeader",
+    props: {
+      id: uid("hdr"),
+      brandName: brand?.name || storeName,
+      showNav: true,
     },
-    {
-      type: "HeroSection",
+  });
+
+  content.push({
+    type: "HeroSection",
+    props: {
+      id: uid("hero"),
+      eyebrow: brand?.tagline || "",
+      title: String(
+        hero?.props.title ||
+          fallback.home.sections.find((s) => s.type === "hero")?.props.title ||
+          storeName,
+      ),
+      subtitle: String(
+        hero?.props.subtitle ||
+          fallback.home.sections.find((s) => s.type === "hero")?.props
+            .subtitle ||
+          "",
+      ),
+      ctaLabel: String(hero?.props.ctaLabel || thematic?.ctaLabel || "Ver produtos"),
+      ctaHref: String(hero?.props.ctaHref || "#produtos"),
+      overlay: Boolean(thematic?.overlayHero),
+    },
+  });
+
+  if (thematic?.tiles) {
+    content.push({
+      type: "CollectionTiles",
       props: {
-        id: uid("hero"),
-        eyebrow: brand?.tagline || "",
-        title: String(
-          hero?.props.title ||
-            fallback.home.sections.find((s) => s.type === "hero")?.props
-              .title ||
-            storeName,
-        ),
-        subtitle: String(
-          hero?.props.subtitle ||
-            fallback.home.sections.find((s) => s.type === "hero")?.props
-              .subtitle ||
-            "",
-        ),
-        ctaLabel: String(hero?.props.ctaLabel || "Ver produtos"),
-        ctaHref: String(hero?.props.ctaHref || "#produtos"),
+        id: uid("tiles"),
+        title: "Categorias Xnamai",
+        tiles: thematic.tiles,
       },
-    },
-    {
-      type: "FeaturedProducts",
+    });
+  }
+
+  if (thematic?.iwtHeading) {
+    content.push({
+      type: "ImageWithText",
       props: {
-        id: uid("feat"),
-        title: String(featured?.props.title || "Destaques"),
-        limit: Number(featured?.props.limit ?? 12) || 12,
-        dense,
+        id: uid("iwt"),
+        heading: thematic.iwtHeading,
+        body: thematic.iwtBody || "",
+        ctaLabel: thematic.ctaLabel,
+        ctaHref: "#produtos",
+        imageSide: "left",
       },
-    },
-    {
-      type: "StoreFooter",
+    });
+  }
+
+  if (thematic?.richHeading) {
+    content.push({
+      type: "RichText",
       props: {
-        id: uid("ftr"),
-        text: String(
-          footer?.props.text ||
-            fallback.home.sections.find((s) => s.type === "footer")?.props
-              .text ||
-            "Loja powered by Dropmai",
-        ),
+        id: uid("rich"),
+        heading: thematic.richHeading,
+        body: thematic.richBody || "",
       },
+    });
+  }
+
+  content.push({
+    type: "FeaturedProducts",
+    props: {
+      id: uid("feat"),
+      title: String(
+        featured?.props.title || thematic?.featuredTitle || "Destaques",
+      ),
+      limit:
+        Number(
+          featured?.props.limit ?? thematic?.featuredLimit ?? 12,
+        ) || 12,
+      dense,
     },
-  );
+  });
+
+  if (thematic?.stlTitle) {
+    content.push({
+      type: "ShopTheLook",
+      props: {
+        id: uid("stl"),
+        title: thematic.stlTitle,
+        caption: thematic.stlCaption || "",
+      },
+    });
+  }
+
+  content.push({
+    type: "StoreFooter",
+    props: {
+      id: uid("ftr"),
+      text: String(
+        footer?.props.text ||
+          thematic?.footerText ||
+          fallback.home.sections.find((s) => s.type === "footer")?.props
+            .text ||
+          "Loja powered by Dropmai",
+      ),
+    },
+  });
 
   return {
     root: {

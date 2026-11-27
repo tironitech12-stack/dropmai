@@ -1,4 +1,5 @@
 import type { ThemeSettings } from "@/lib/themes";
+import { THEMATIC_PRESETS } from "@/lib/thematic-presets";
 
 type ThemePreset = {
   colors: ThemeSettings["colors"];
@@ -144,6 +145,22 @@ const PRESETS: Record<string, ThemePreset> = {
     footerText: "Solar · Dropmai",
   },
 };
+
+for (const t of THEMATIC_PRESETS) {
+  PRESETS[t.id] = {
+    colors: t.colors,
+    typography: t.typography,
+    tagline: t.tagline,
+    heroTitle: t.heroTitle,
+    heroSubtitle: t.heroSubtitle,
+    announcement: t.announcement,
+    announcementEnabled: t.announcementEnabled,
+    featuredTitle: t.featuredTitle,
+    featuredLimit: t.featuredLimit,
+    ctaLabel: t.ctaLabel,
+    footerText: t.footerText,
+  };
+}
 
 /** Client/SSR fallback when API omits themeSettings (legacy store). */
 export function buildDefaultSettingsClient(

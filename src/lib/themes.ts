@@ -1,3 +1,5 @@
+import { thematicMetaList } from "@/lib/thematic-presets";
+
 export type ThemeSectionType =
   | "announcement"
   | "hero"
@@ -45,7 +47,7 @@ export type ThemeDefinition = {
   previewAccent2?: string;
 };
 
-export const THEME_META: ThemeDefinition[] = [
+const BASE_THEME_META: ThemeDefinition[] = [
   {
     id: "vitrine",
     name: "Vitrine",
@@ -96,6 +98,11 @@ export const THEME_META: ThemeDefinition[] = [
   },
 ];
 
+export const THEME_META: ThemeDefinition[] = [
+  ...BASE_THEME_META,
+  ...thematicMetaList(),
+];
+
 export function themeMeta(themeId: string) {
   return THEME_META.find((t) => t.id === themeId) ?? THEME_META[0];
 }
@@ -120,7 +127,11 @@ export function themeCssVars(
 }
 
 export function isDenseTheme(themeId: string) {
-  return themeId === "catalogo";
+  return (
+    themeId === "catalogo" ||
+    themeId === "prateleira" ||
+    themeId === "deposito"
+  );
 }
 
 export function isMinimalTheme(themeId: string) {
