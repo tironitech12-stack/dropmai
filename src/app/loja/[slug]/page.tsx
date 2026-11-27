@@ -5,6 +5,7 @@ import { apiFetchServer } from "@/lib/api-server";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
 import {
   buildDefaultPuckData,
+  ensurePuckRootProps,
   isPuckData,
   type DropmaiPuckData,
 } from "@/puck/default-data";
@@ -91,20 +92,7 @@ export default async function StorefrontPage({ params, searchParams }: Props) {
     ? (settings.puck as DropmaiPuckData)
     : buildDefaultPuckData(store.name, themeId, settings);
 
-  const puckData: DropmaiPuckData = {
-    ...rawPuck,
-    root: {
-      ...rawPuck.root,
-      props: {
-        ...rawPuck.root.props,
-        themeId: rawPuck.root.props?.themeId || themeId,
-        bodyFont:
-          rawPuck.root.props?.bodyFont ||
-          settings.typography.body ||
-          "system-ui, -apple-system, Segoe UI, sans-serif",
-      },
-    },
-  };
+  const puckData = ensurePuckRootProps(rawPuck, themeId, settings);
 
   // Prefer Puck layout whenever we have structured page data.
   if (isPuckData(puckData)) {

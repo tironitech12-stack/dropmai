@@ -122,3 +122,32 @@ export function isPuckData(value: unknown): value is DropmaiPuckData {
   const v = value as DropmaiPuckData;
   return Array.isArray(v.content) && typeof v.root === "object";
 }
+
+/** Fill required root props for older saved Puck JSON / partial data. */
+export function ensurePuckRootProps(
+  data: DropmaiPuckData,
+  themeId: string,
+  settings?: ThemeSettings | null,
+): DropmaiPuckData {
+  const fallback = buildDefaultPuckData(
+    settings?.brand.name || "Loja",
+    themeId,
+    settings,
+  ).root.props!;
+  const prev = data.root?.props;
+  return {
+    ...data,
+    root: {
+      ...data.root,
+      props: {
+        ...fallback,
+        ...prev,
+        themeId: prev?.themeId || themeId || fallback.themeId,
+        bodyFont:
+          prev?.bodyFont ||
+          settings?.typography.body ||
+          fallback.bodyFont,
+      },
+    },
+  };
+}

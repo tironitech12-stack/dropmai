@@ -11,6 +11,7 @@ import { themeMeta, type ThemeSettings } from "@/lib/themes";
 import { dropmaiPuckConfig } from "@/puck/config";
 import {
   buildDefaultPuckData,
+  ensurePuckRootProps,
   isPuckData,
   type DropmaiPuckData,
 } from "@/puck/default-data";
@@ -47,20 +48,7 @@ export function PuckThemeEditor({ storeId }: Props) {
         const raw = isPuckData(nextSettings.puck)
           ? (nextSettings.puck as DropmaiPuckData)
           : buildDefaultPuckData(s.name, themeId, nextSettings);
-        const puck: DropmaiPuckData = {
-          ...raw,
-          root: {
-            ...raw.root,
-            props: {
-              ...raw.root.props,
-              themeId: raw.root.props?.themeId || themeId,
-              bodyFont:
-                raw.root.props?.bodyFont ||
-                nextSettings.typography.body ||
-                "system-ui, -apple-system, Segoe UI, sans-serif",
-            },
-          },
-        };
+        const puck = ensurePuckRootProps(raw, themeId, nextSettings);
         setStore(s);
         setSettings(nextSettings);
         setData(puck);
