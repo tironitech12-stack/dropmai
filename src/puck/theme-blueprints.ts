@@ -184,6 +184,50 @@ function rich(heading: string, body: string): Block {
     props: { id: uid("rich"), heading, body },
   };
 }
+function collage(c: Ctx, title: string, captions: string): Block {
+  return {
+    type: "Collage",
+    props: {
+      id: uid("col"),
+      title,
+      captions,
+      imageUrls: [c.heroImg, c.tiles[0], c.tiles[1]].filter(Boolean).join("|"),
+    },
+  };
+}
+function video(
+  c: Ctx,
+  heading: string,
+  body: string,
+  cta = "Ver produtos",
+): Block {
+  return {
+    type: "VideoSection",
+    props: {
+      id: uid("vid"),
+      heading,
+      body,
+      ctaLabel: cta,
+      posterUrl: c.heroImg,
+    },
+  };
+}
+function newsletter(
+  heading: string,
+  body: string,
+  buttonLabel = "Inscrever",
+): Block {
+  return {
+    type: "Newsletter",
+    props: {
+      id: uid("nl"),
+      heading,
+      body,
+      buttonLabel,
+      placeholder: "seu@email.com",
+    },
+  };
+}
 function footer(text: string): Block {
   return { type: "StoreFooter", props: { id: uid("ftr"), text } };
 }
@@ -221,6 +265,7 @@ export function blueprintBlocks(
         footer("Ímpeto · Dropmai"),
       ];
     case "trilha":
+      // Ride free-ref — outdoor energy + video poster
       return [
         ann("Camping · Esporte · Frete sob demanda"),
         mega(brand, "Camping|Esporte|Bike|Mobilidade"),
@@ -230,13 +275,20 @@ export function blueprintBlocks(
           cta: "Ver coleção",
         }),
         tiles(c, "Terrenos", "Camping | Esporte | Bike | Mobilidade"),
+        video(
+          c,
+          "No ritmo da trilha",
+          "Poster cinematográfico — inspirado em Ride (Shopify free), first-party Dropmai.",
+          "Ver outdoor",
+        ),
         promoTiles(c, "Bike week", "Acessórios leves", "Camping kit", "Noite sob as estrelas"),
         featured(c, "Em movimento", 8),
-        iwt(c, "Performance no dia a dia", "Foto ampla e cantos arredondados — DNA Coco, first-party Dropmai.", "right", 2),
         trust("Frete sob demanda:checkout|Estoque Xnamai:fornecedor|Troca fácil:7 dias|Suporte:chat"),
-        footer("Trilha · Dropmai"),
+        newsletter("Drops outdoor", "Avisos de camping, bike e mobilidade."),
+        footer("Trilha · Dropmai · ref Ride"),
       ];
     case "prateleira":
+      // Refresh free-ref — clean retail + collage + newsletter
       return [
         promo("Flash da semana — copie o cupom", "DROPMAI10"),
         benefits(
@@ -249,15 +301,18 @@ export function blueprintBlocks(
           cta: "Ver catálogo",
         }),
         tiles(c, "Departamentos", "Celular | Casa | Informática | Energia"),
+        collage(c, "Vitrine Refresh", "Celular | Casa | Energia"),
         featured(c, "Mais vendidos", 24, true),
         row("Tendências da semana", 4),
         faq(
           "Ajuda na compra",
           "Como funciona o frete?|Calculado no checkout com o fornecedor.||Posso trocar?|Sim, política da loja + suporte Dropmai.",
         ),
-        footer("Prateleira · Dropmai"),
+        newsletter("Ofertas na caixa", "Cupons e lançamentos da prateleira."),
+        footer("Prateleira · Dropmai · ref Refresh"),
       ];
     case "editorial":
+      // Sense free-ref — soft lifestyle collage + newsletter
       return [
         ann("Edição da semana · Frete sob demanda"),
         hdr(brand),
@@ -267,17 +322,16 @@ export function blueprintBlocks(
           cta: "Abrir lookbook",
           overlay: true,
         }),
+        collage(c, "Mood Sense", "Pele | Luz | Textura"),
         tiles(c, "Coleções", "Estética | Luminárias | Bolsas | Decoração"),
         iwt(c, "História da marca", "Combine foto lifestyle com o markup da sua loja.", "left", 0),
         featured(c, "Em vitrine", 8),
         stl("Monte o look", "Pins nos produtos publicados da vitrine."),
-        testimonials(
-          "Vozes da edição",
-          "Parece revista de moda|Carla||Lookbook vendeu na primeira semana|Diego",
-        ),
-        footer("Editorial · Dropmai"),
+        newsletter("Edição por e-mail", "Lookbooks e drops de beleza."),
+        footer("Editorial · Dropmai · ref Sense"),
       ];
     case "multiplica":
+      // Refresh free-ref — modular retail
       return [
         ann("Mix de categorias · Atualizado com Xnamai"),
         hdr(brand),
@@ -287,11 +341,12 @@ export function blueprintBlocks(
           cta: "Ver módulos",
         }),
         tiles(c, "Módulos", t?.tiles || "Celular | Casa | Beleza | Energia"),
+        collage(c, "Blocos Refresh", "A | B | C"),
         promoTiles(c, "Bloco A", "Lançamentos", "Bloco B", "Mais pedidos"),
         featured(c, "Em alta", 8),
         row("Strip de tendências", 4),
-        marquee("MULTIPLICA · GRID · XNAMAI"),
-        footer("Multiplica · Dropmai"),
+        newsletter("Mix semanal", "Módulos e lançamentos Xnamai."),
+        footer("Multiplica · Dropmai · ref Refresh"),
       ];
     case "conceito":
       return [
@@ -312,6 +367,7 @@ export function blueprintBlocks(
         footer("Conceito · Dropmai"),
       ];
     case "seixo":
+      // Craft free-ref — artisan home calm
       return [
         ann("Casa calma · Organizadores e utilidades"),
         hdr(brand),
@@ -321,15 +377,14 @@ export function blueprintBlocks(
           cta: "Ver casa",
         }),
         iwt(c, "Organização sem pressa", "Cards soft para lavanderia, cozinha e closet.", "left", 0),
+        collage(c, "Feito à mão", "Closet | Cozinha | Lavanderia"),
         tiles(c, "Ambientes", "Organizers | Cozinha | Lavanderia | Decor"),
         featured(c, "Para a casa", 8),
-        testimonials(
-          "Em casa",
-          "Ficou aconchegante|Lia||Utilidades com cara de boutique|Rafa",
-        ),
-        footer("Seixo · Dropmai"),
+        newsletter("Casa por e-mail", "Ideias Craft para organizar."),
+        footer("Seixo · Dropmai · ref Craft"),
       ];
     case "focal":
+      // Dawn free-ref — full OS 2.0 section vocabulary
       return [
         ann("Celular em close · Capas, películas e gadgets"),
         mega(brand, "Capas|Películas|Cabos|Suportes|Energia"),
@@ -338,17 +393,20 @@ export function blueprintBlocks(
           subtitle: "Hero fotográfico para acessórios de celular Xnamai.",
           cta: "Ver capas",
           overlay: true,
-          eyebrow: "Focal",
+          eyebrow: "Focal · Dawn",
         }),
         tiles(c, "Acessórios", "Capas | Películas | Cabos | Suportes"),
+        collage(c, "Colagem Dawn", "Capas | Películas | Cabos"),
         featured(c, "Em destaque", 8),
         promoTiles(c, "MagSafe", "Linha magnética", "Película nano", "Proteção total"),
-        iwt(c, "Close-up que vende", "Cards com sombra de lente — DNA Focal, first-party.", "right", 2),
-        faq(
-          "Dúvidas rápidas",
-          "Serve no meu modelo?|Confira a ficha do produto Xnamai.||Tem película?|Sim, cluster películas no catálogo.",
+        video(
+          c,
+          "Close que vende",
+          "Seção de vídeo/poster no estilo Dawn — first-party Dropmai.",
+          "Ver capas",
         ),
-        footer("Focal · Dropmai"),
+        newsletter("Novidades Focal", "Capas, películas e drops Xnamai."),
+        footer("Focal · Dropmai · ref Dawn"),
       ];
     case "faisca":
       return [
@@ -368,6 +426,7 @@ export function blueprintBlocks(
         footer("Faísca · Dropmai"),
       ];
     case "impacto":
+      // Ride free-ref — high-energy sport/audio
       return [
         ann("Áudio em bloco — caixas, fones e sound bars"),
         hdr(brand),
@@ -378,10 +437,16 @@ export function blueprintBlocks(
           overlay: true,
         }),
         marquee("BASS · TWS · SOUND BAR · IMPACTO"),
+        video(
+          c,
+          "Sessão ao vivo",
+          "Poster de alta energia — Ride free-ref, first-party Dropmai.",
+          "Ouvir agora",
+        ),
         featured(c, "Playlist da loja", 8),
         promoTiles(c, "Caixas", "Bluetooth forte", "Fones", "TWS e head"),
-        iwt(c, "Blocos largos", "Tipografia pesada e seções cheias — Impact first-party.", "left", 1),
-        footer("Impacto · Dropmai"),
+        newsletter("Playlist semanal", "Drops de áudio e fones."),
+        footer("Impacto · Dropmai · ref Ride"),
       ];
     case "deposito":
       return [
@@ -401,6 +466,7 @@ export function blueprintBlocks(
         footer("Depósito · Dropmai"),
       ];
     case "amplia":
+      // Dawn free-ref — wide image-banner + collage + newsletter
       return [
         ann("Entretenimento wide — TV, monitores e áudio"),
         hdr(brand),
@@ -411,12 +477,19 @@ export function blueprintBlocks(
           overlay: true,
         }),
         tiles(c, "Sala", "Monitores | Sound bar | HDMI | Streaming"),
+        collage(c, "Sala Dawn", "TV | Áudio | Streaming"),
         featured(c, "Em cartaz", 9),
-        iwt(c, "Experiência wide", "Grade 3 colunas e hero cinema — Maximize first-party.", "right", 0),
-        trust("Imagem:4K-ready|Áudio:sound bar|Cabos:HDMI 2.1"),
-        footer("Amplia · Dropmai"),
+        video(
+          c,
+          "Sessão wide",
+          "Poster cinema — vocabulário Dawn, first-party Dropmai.",
+          "Ver sala",
+        ),
+        newsletter("Estreias na caixa", "Monitores, sound bars e HDMI."),
+        footer("Amplia · Dropmai · ref Dawn"),
       ];
     case "extra":
+      // Refresh free-ref — occasion retail
       return [
         ann("Presentes e kids · Ocasiões o ano todo"),
         marquee("PRESENTE · KIDS · NATAL · EXTRA"),
@@ -427,13 +500,11 @@ export function blueprintBlocks(
           cta: "Ver presentes",
         }),
         tiles(c, "Ocasiões", "Kids | Natal | Aniversário | Gadgets"),
+        collage(c, "Ocasiões Refresh", "Kids | Natal | Gadgets"),
         promoTiles(c, "Kids", "Cores alegres", "Natal", "Decoração"),
         featured(c, "Para presentear", 8),
-        testimonials(
-          "Presenteou",
-          "Embalagem linda|Mari||Criançada aprovou|Pedro",
-        ),
-        footer("Extra · Dropmai"),
+        newsletter("Datas especiais", "Lembretes de presentes e kids."),
+        footer("Extra · Dropmai · ref Refresh"),
       ];
     case "ultra":
       return [
@@ -453,6 +524,7 @@ export function blueprintBlocks(
         footer("Ultra · Dropmai"),
       ];
     case "agora":
+      // Taste free-ref — kitchen/home storytelling
       return [
         ann("Decoração e luminárias · Colunas editoriais"),
         hdr(brand),
@@ -461,27 +533,33 @@ export function blueprintBlocks(
           subtitle: "Ágora clássica para decoração e luminárias Xnamai.",
           cta: "Ver ambiente",
         }),
+        rich("Mesa posta", "Storytelling Taste — comida, luz e espaço, first-party."),
         iwt(c, "Coluna editorial", "Serif leve e storytelling de ambiente.", "left", 0),
+        collage(c, "Ambientes Taste", "Luz | Forma | Mesa"),
         tiles(c, "Espaços", "Luminárias | Decor | Móveis | Ring light"),
         featured(c, "Em exposição", 8),
-        rich("Galeria", "Inspirado em Athens — first-party Dropmai."),
-        footer("Ágora · Dropmai"),
+        newsletter("Receitas de espaço", "Decor e luminárias na caixa."),
+        footer("Ágora · Dropmai · ref Taste"),
       ];
     case "monge":
+      // Taste free-ref — quiet kitchen
       return [
         hdr(brand),
         hero(c, {
           title: "Cozinha quieta",
           subtitle: "Quase monochrome para utensílios minimal Xnamai.",
           cta: "Ver cozinha",
-          eyebrow: "Monge",
+          eyebrow: "Monge · Taste",
         }),
-        rich("Menos ornamento", "Monk-inspired: silêncio visual, produto no centro."),
+        rich("Menos ornamento", "Taste/Monk: silêncio visual, produto no centro."),
+        collage(c, "Bancada Taste", "Utensílio | Pote | Tábua"),
         featured(c, "Essenciais", 6),
         iwt(c, "Mão na massa", "Utensílios e organizadores com markup seu.", "right", 1),
-        footer("Monge · Dropmai"),
+        newsletter("Cozinha quieta", "Essenciais Xnamai sem ruído."),
+        footer("Monge · Dropmai · ref Taste"),
       ];
     case "impecavel":
+      // Sense free-ref — soft glam
       return [
         ann("Beleza polished · Soft glam"),
         hdr(brand),
@@ -491,16 +569,15 @@ export function blueprintBlocks(
           cta: "Ver beleza",
           overlay: true,
         }),
+        collage(c, "Ritual Sense", "Pele | Escova | Espelho"),
         tiles(c, "Rituais", "Estética | Escovas | Espelhos | Kits"),
         featured(c, "Rotina", 8),
         stl("Look de cuidado", "Hotspots em produtos da vitrine."),
-        testimonials(
-          "Glow",
-          "Textura perfeita|Bia||Parece boutique|Carol",
-        ),
-        footer("Impecável · Dropmai"),
+        newsletter("Glow na caixa", "Rotinas e kits de beleza."),
+        footer("Impecável · Dropmai · ref Sense"),
       ];
     case "oficina":
+      // Craft free-ref — handmade / tools
       return [
         ann("Ferramentas · B-Tek · DIY"),
         marquee("OFICINA · FERRAMENTAS · PRECISION · XNAMAI"),
@@ -512,13 +589,16 @@ export function blueprintBlocks(
           overlay: true,
         }),
         benefits("Reto | Amarelo ferramenta | Preço claro | Estoque Xnamai"),
-        featured(c, "Bancada", 12, true),
-        promoTiles(c, "Kits", "Comece agora", "Lanternas", "Trabalho noturno"),
-        faq(
-          "Oficina",
-          "Tem kit completo?|Sim, cluster ferramentas B-Tek.||Voltagem?|Confira a ficha do produto.",
+        video(
+          c,
+          "Oficina em ação",
+          "Poster Craft — ferramentas com história, first-party Dropmai.",
+          "Ver kits",
         ),
-        footer("Oficina · Dropmai"),
+        featured(c, "Bancada", 12, true),
+        collage(c, "Bancada Craft", "Chaves | Lanterna | Maleta"),
+        newsletter("DIY semanal", "Kits e lanternas B-Tek."),
+        footer("Oficina · Dropmai · ref Craft"),
       ];
     case "minimal":
       return [
@@ -549,6 +629,7 @@ export function blueprintBlocks(
         footer("Catálogo · Dropmai"),
       ];
     case "boutique":
+      // Sense free-ref
       return [
         ann("Edição limitada · Envio cuidadoso"),
         hdr(brand),
@@ -558,10 +639,12 @@ export function blueprintBlocks(
           cta: "Ver coleção",
           overlay: true,
         }),
+        collage(c, "Edição Sense", "Look | Peça | Detalhe"),
         iwt(c, "Editorial boutique", "Serif + foto — boutique first-party.", "left", 0),
         featured(c, "Em destaque", 8),
         stl("Look da semana", "Pins nos produtos da loja."),
-        footer("Boutique · Dropmai"),
+        newsletter("Lista VIP", "Edições limitadas na caixa."),
+        footer("Boutique · Dropmai · ref Sense"),
       ];
     case "urbano":
       return [
@@ -599,6 +682,7 @@ export function blueprintBlocks(
       ];
     case "vitrine":
     default:
+      // Dawn baseline stack
       return [
         ann(
           t?.announcement ||
@@ -624,6 +708,7 @@ export function blueprintBlocks(
           overlay: Boolean(t?.overlayHero),
         }),
         tiles(c, "Categorias", t?.tiles || "Novidades | Destaques | Ofertas | Mais"),
+        collage(c, "Colagem", "Novidades | Destaques | Ofertas"),
         featured(c, t?.featuredTitle || "Destaques", t?.featuredLimit || 12),
         iwt(
           c,
@@ -632,8 +717,9 @@ export function blueprintBlocks(
           "left",
           1,
         ),
+        newsletter("Fique por dentro", "Lançamentos da sua vitrine."),
         trust("Marca própria:domínio|Catálogo:Xnamai|Editor:Puck|Temas:Dropmai"),
-        footer(t?.footerText || "Loja powered by Dropmai"),
+        footer(t?.footerText || "Loja powered by Dropmai · ref Dawn"),
       ];
   }
 }

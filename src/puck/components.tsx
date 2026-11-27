@@ -537,3 +537,124 @@ export function ShopTheLook({
     </section>
   );
 }
+
+/** Dawn-inspired collage mosaic (3 photo cells). */
+export function Collage({
+  title,
+  captions,
+  imageUrls,
+}: {
+  title: string;
+  captions: string;
+  imageUrls?: string;
+}) {
+  const caps = String(captions || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+  const imgs = String(imageUrls || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const cells = [0, 1, 2].map((i) => ({
+    caption: caps[i] || "",
+    image: imgs[i] || `/hero-${(i % 3) + 1}.jpg`,
+  }));
+  return (
+    <section className="dm-collage">
+      {title ? <h2 className="dm-collage-title">{title}</h2> : null}
+      <div className="dm-collage-grid">
+        {cells.map((cell, i) => (
+          <a
+            key={`${cell.caption}-${i}`}
+            href="#produtos"
+            className={`dm-collage-cell dm-collage-cell--${i + 1}`}
+            style={{
+              backgroundImage: `linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.55)), url(${cell.image})`,
+            }}
+          >
+            {cell.caption ? <span>{cell.caption}</span> : null}
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** Dawn video section — poster photo + play affordance (no Liquid fork). */
+export function VideoSection({
+  heading,
+  body,
+  ctaLabel,
+  posterUrl,
+}: {
+  heading: string;
+  body: string;
+  ctaLabel: string;
+  posterUrl?: string;
+}) {
+  const poster = posterUrl?.trim() || "/hero-poster.jpg";
+  return (
+    <section className="dm-video">
+      <div
+        className="dm-video-stage"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.55)), url(${poster})`,
+        }}
+      >
+        <button type="button" className="dm-video-play" aria-label="Reproduzir">
+          ▶
+        </button>
+        <div className="dm-video-copy">
+          {heading ? <h2>{heading}</h2> : null}
+          {body ? <p>{body}</p> : null}
+          {ctaLabel ? (
+            <a className="dm-btn" href="#produtos">
+              {ctaLabel}
+            </a>
+          ) : null}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Dawn newsletter / email signup banner. */
+export function Newsletter({
+  heading,
+  body,
+  buttonLabel,
+  placeholder,
+}: {
+  heading: string;
+  body: string;
+  buttonLabel: string;
+  placeholder?: string;
+}) {
+  return (
+    <section className="dm-newsletter">
+      <div className="dm-newsletter-inner">
+        <div className="dm-newsletter-copy">
+          {heading ? <h2>{heading}</h2> : null}
+          {body ? <p>{body}</p> : null}
+        </div>
+        <form
+          className="dm-newsletter-form"
+          onSubmit={(e) => e.preventDefault()}
+          aria-label="Newsletter"
+        >
+          <input
+            type="email"
+            name="email"
+            placeholder={placeholder || "seu@email.com"}
+            aria-label="E-mail"
+          />
+          <button type="submit" className="dm-btn">
+            {buttonLabel || "Inscrever"}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}

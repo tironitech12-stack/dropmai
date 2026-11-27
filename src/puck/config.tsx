@@ -5,6 +5,7 @@ import type { Config } from "@puckeditor/core";
 import {
   AnnouncementBar,
   BenefitStrip,
+  Collage,
   CollectionTiles,
   FaqSection,
   FeaturedProducts,
@@ -13,6 +14,7 @@ import {
   ImageWithText,
   MarqueeStrip,
   MegaHeader,
+  Newsletter,
   PromoBar,
   PromoTiles,
   RichText,
@@ -21,6 +23,7 @@ import {
   StoreHeader,
   Testimonials,
   TrustRow,
+  VideoSection,
 } from "@/puck/components";
 
 export type DropmaiPuckProps = {
@@ -63,6 +66,19 @@ export type DropmaiPuckProps = {
   FaqSection: { title: string; items: string };
   Testimonials: { title: string; quotes: string };
   ShopTheLook: { title: string; caption: string };
+  Collage: { title: string; captions: string; imageUrls: string };
+  VideoSection: {
+    heading: string;
+    body: string;
+    ctaLabel: string;
+    posterUrl: string;
+  };
+  Newsletter: {
+    heading: string;
+    body: string;
+    buttonLabel: string;
+    placeholder: string;
+  };
   StoreFooter: { text: string };
 };
 
@@ -194,6 +210,9 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         "CollectionTiles",
         "PromoTiles",
         "ShopTheLook",
+        "Collage",
+        "VideoSection",
+        "Newsletter",
         "TrustRow",
         "FaqSection",
         "Testimonials",
@@ -475,6 +494,58 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
       },
       defaultProps: { title: "Tendências", limit: 4 },
       render: (props) => <FeaturedRow {...props} />,
+    },
+    Collage: {
+      label: "Colagem",
+      fields: {
+        title: { type: "text", label: "Título" },
+        captions: {
+          type: "textarea",
+          label: "Legendas (separadas por |, até 3)",
+        },
+        imageUrls: {
+          type: "textarea",
+          label: "URLs das imagens (separadas por |)",
+        },
+      },
+      defaultProps: {
+        title: "Colagem",
+        captions: "Look 1 | Look 2 | Look 3",
+        imageUrls: "",
+      },
+      render: (props) => <Collage {...props} />,
+    },
+    VideoSection: {
+      label: "Vídeo / poster",
+      fields: {
+        heading: { type: "text", label: "Título" },
+        body: { type: "textarea", label: "Texto" },
+        ctaLabel: { type: "text", label: "CTA" },
+        posterUrl: { type: "text", label: "URL do poster" },
+      },
+      defaultProps: {
+        heading: "Assista a história",
+        body: "Poster fotográfico inspirado na seção de vídeo do Dawn.",
+        ctaLabel: "Ver produtos",
+        posterUrl: "",
+      },
+      render: (props) => <VideoSection {...props} />,
+    },
+    Newsletter: {
+      label: "Newsletter",
+      fields: {
+        heading: { type: "text", label: "Título" },
+        body: { type: "textarea", label: "Texto" },
+        buttonLabel: { type: "text", label: "Botão" },
+        placeholder: { type: "text", label: "Placeholder e-mail" },
+      },
+      defaultProps: {
+        heading: "Novidades na caixa de entrada",
+        body: "Lançamentos Xnamai e ofertas da loja.",
+        buttonLabel: "Inscrever",
+        placeholder: "seu@email.com",
+      },
+      render: (props) => <Newsletter {...props} />,
     },
     StoreFooter: {
       label: "Rodapé",
