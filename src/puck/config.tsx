@@ -6,14 +6,21 @@ import {
   AnnouncementBar,
   BenefitStrip,
   CollectionTiles,
+  FaqSection,
   FeaturedProducts,
+  FeaturedRow,
   HeroSection,
   ImageWithText,
+  MarqueeStrip,
+  MegaHeader,
   PromoBar,
+  PromoTiles,
   RichText,
   ShopTheLook,
   StoreFooter,
   StoreHeader,
+  Testimonials,
+  TrustRow,
 } from "@/puck/components";
 
 export type DropmaiPuckProps = {
@@ -21,6 +28,8 @@ export type DropmaiPuckProps = {
   PromoBar: { text: string; code: string };
   BenefitStrip: { items: string };
   StoreHeader: { brandName: string; showNav: boolean };
+  MegaHeader: { brandName: string; links: string; showSearch: boolean };
+  MarqueeStrip: { text: string };
   HeroSection: {
     eyebrow: string;
     title: string;
@@ -31,6 +40,7 @@ export type DropmaiPuckProps = {
     imageUrl: string;
   };
   FeaturedProducts: { title: string; limit: number; dense: boolean };
+  FeaturedRow: { title: string; limit: number };
   RichText: { heading: string; body: string };
   ImageWithText: {
     heading: string;
@@ -41,6 +51,17 @@ export type DropmaiPuckProps = {
     imageUrl: string;
   };
   CollectionTiles: { title: string; tiles: string; imageUrls: string };
+  PromoTiles: {
+    leftTitle: string;
+    leftBody: string;
+    rightTitle: string;
+    rightBody: string;
+    leftImage: string;
+    rightImage: string;
+  };
+  TrustRow: { items: string };
+  FaqSection: { title: string; items: string };
+  Testimonials: { title: string; quotes: string };
   ShopTheLook: { title: string; caption: string };
   StoreFooter: { text: string };
 };
@@ -156,7 +177,9 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         "AnnouncementBar",
         "PromoBar",
         "BenefitStrip",
+        "MarqueeStrip",
         "StoreHeader",
+        "MegaHeader",
         "StoreFooter",
       ],
     },
@@ -165,10 +188,15 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
       components: [
         "HeroSection",
         "FeaturedProducts",
+        "FeaturedRow",
         "RichText",
         "ImageWithText",
         "CollectionTiles",
+        "PromoTiles",
         "ShopTheLook",
+        "TrustRow",
+        "FaqSection",
+        "Testimonials",
       ],
     },
   },
@@ -348,6 +376,105 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         caption: "Pins nos produtos publicados da sua loja.",
       },
       render: (props) => <ShopTheLook {...props} />,
+    },
+    MegaHeader: {
+      label: "Header mega / busca",
+      fields: {
+        brandName: { type: "text", label: "Marca" },
+        links: { type: "textarea", label: "Links (separados por |)" },
+        showSearch: {
+          type: "radio",
+          label: "Busca",
+          options: [
+            { label: "Sim", value: true },
+            { label: "Não", value: false },
+          ],
+        },
+      },
+      defaultProps: {
+        brandName: "",
+        links: "Novidades | Ofertas | Categorias",
+        showSearch: true,
+      },
+      render: (props) => <MegaHeader {...props} />,
+    },
+    MarqueeStrip: {
+      label: "Marquee",
+      fields: { text: { type: "text", label: "Texto" } },
+      defaultProps: { text: "Dropmai · Xnamai" },
+      render: (props) => <MarqueeStrip {...props} />,
+    },
+    PromoTiles: {
+      label: "Tiles promo 2 col",
+      fields: {
+        leftTitle: { type: "text", label: "Título esquerdo" },
+        leftBody: { type: "text", label: "Texto esquerdo" },
+        rightTitle: { type: "text", label: "Título direito" },
+        rightBody: { type: "text", label: "Texto direito" },
+        leftImage: { type: "text", label: "Imagem esquerda" },
+        rightImage: { type: "text", label: "Imagem direita" },
+      },
+      defaultProps: {
+        leftTitle: "Oferta A",
+        leftBody: "Destaque",
+        rightTitle: "Oferta B",
+        rightBody: "Destaque",
+        leftImage: "",
+        rightImage: "",
+      },
+      render: (props) => <PromoTiles {...props} />,
+    },
+    TrustRow: {
+      label: "Trust / benefícios",
+      fields: {
+        items: {
+          type: "textarea",
+          label: "Itens (titulo:desc separados por |)",
+        },
+      },
+      defaultProps: {
+        items: "Frete:sob demanda|Estoque:Xnamai|Troca:fácil|Suporte:Dropmai",
+      },
+      render: (props) => <TrustRow {...props} />,
+    },
+    FaqSection: {
+      label: "FAQ",
+      fields: {
+        title: { type: "text", label: "Título" },
+        items: {
+          type: "textarea",
+          label: "Perguntas (q|a || q|a)",
+        },
+      },
+      defaultProps: {
+        title: "Perguntas frequentes",
+        items: "Como funciona o frete?|No checkout.||Posso trocar?|Sim.",
+      },
+      render: (props) => <FaqSection {...props} />,
+    },
+    Testimonials: {
+      label: "Depoimentos",
+      fields: {
+        title: { type: "text", label: "Título" },
+        quotes: {
+          type: "textarea",
+          label: "Quotes (texto|autor || …)",
+        },
+      },
+      defaultProps: {
+        title: "Quem comprou",
+        quotes: "Ótima loja|Cliente||Entrega rápida|Outro",
+      },
+      render: (props) => <Testimonials {...props} />,
+    },
+    FeaturedRow: {
+      label: "Faixa de produtos",
+      fields: {
+        title: { type: "text", label: "Título" },
+        limit: { type: "number", label: "Limite", min: 2, max: 12 },
+      },
+      defaultProps: { title: "Tendências", limit: 4 },
+      render: (props) => <FeaturedRow {...props} />,
     },
     StoreFooter: {
       label: "Rodapé",

@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
 import {
+  nicheForTheme,
   themeHeroImage,
   themeTileImages,
 } from "@/lib/theme-preview-assets";
@@ -24,12 +25,12 @@ function layoutFor(themeId: string): ThemeLayout {
   return "standard";
 }
 
-/** Lifestyle mini-storefront: photo hero + type + product strip (Shopify-like). */
+/** Lifestyle mini-storefront using niche hero + product strips. */
 export function ThemeThumb({ themeId, name }: Props) {
   const settings = buildDefaultSettingsClient(themeId, name);
   const layout = layoutFor(themeId);
+  const niche = nicheForTheme(themeId);
   const hero = settings.home.sections.find((s) => s.type === "hero");
-  const feat = settings.home.sections.find((s) => s.type === "featured_products");
   const heroTitle =
     typeof hero?.props.title === "string" ? String(hero.props.title) : name;
   const heroSub =
@@ -38,14 +39,17 @@ export function ThemeThumb({ themeId, name }: Props) {
     typeof hero?.props.ctaLabel === "string"
       ? String(hero.props.ctaLabel)
       : "Ver produtos";
-  const featured =
-    typeof feat?.props.title === "string" ? String(feat.props.title) : "Destaques";
   const heroImg = themeHeroImage(themeId);
   const tiles = themeTileImages(themeId, 3);
+  const showMarquee = ["impeto", "faisca", "impacto", "urbano", "oficina", "extra"].includes(
+    themeId,
+  );
+  const showTiles = !["minimal", "monge", "conceito", "deposito"].includes(themeId);
 
   return (
     <div
       className={`dm-thumb dm-thumb--photo dm-thumb--${layout}`}
+      data-niche={niche}
       style={
         {
           "--thumb-primary": settings.colors.primary,
@@ -60,6 +64,7 @@ export function ThemeThumb({ themeId, name }: Props) {
       }
       aria-hidden
     >
+      {showMarquee ? <div className="dm-thumb-announce">{niche}</div> : null}
       <header className="dm-thumb-header">
         <span className="dm-thumb-brand">{name}</span>
         <nav className="dm-thumb-nav">
@@ -72,7 +77,7 @@ export function ThemeThumb({ themeId, name }: Props) {
       <section
         className="dm-thumb-hero is-photo"
         style={{
-          backgroundImage: `linear-gradient(105deg, color-mix(in srgb, var(--thumb-secondary) 72%, transparent) 0%, rgba(0,0,0,0.25) 55%, transparent 100%), url(${heroImg})`,
+          backgroundImage: `linear-gradient(105deg, color-mix(in srgb, var(--thumb-secondary) 55%, transparent) 0%, rgba(0,0,0,0.2) 50%, transparent 100%), url(${heroImg})`,
         }}
       >
         <div className="dm-thumb-hero-copy">
@@ -82,16 +87,24 @@ export function ThemeThumb({ themeId, name }: Props) {
         </div>
       </section>
 
-      <div className="dm-thumb-featured">
-        <span className="dm-thumb-featured-label">{featured}</span>
-        <div className="dm-thumb-products">
+      {showTiles ? (
+        <div className="dm-thumb-tiles">
           {tiles.map((src, i) => (
-            <article key={src} className="dm-thumb-card">
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} className="dm-thumb-tile-img" src={src} alt="" data-i={i} />
+          ))}
+        </div>
+      ) : null}
+
+      <div className="dm-thumb-featured">
+        <div className="dm-thumb-products">
+          {tiles.map((src) => (
+            <article key={`p-${src}`} className="dm-thumb-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="dm-thumb-card-img" src={src} alt="" />
               <div className="dm-thumb-card-meta">
                 <b />
-                <i style={{ width: `${36 + i * 8}%` }} />
+                <i />
               </div>
             </article>
           ))}

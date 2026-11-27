@@ -190,6 +190,193 @@ export function StoreFooter({ text }: { text: string }) {
   );
 }
 
+export function MegaHeader({
+  brandName,
+  links,
+  showSearch,
+}: {
+  brandName: string;
+  links: string;
+  showSearch: boolean;
+}) {
+  const { storeSlug, storeName } = useStorefrontRuntime();
+  const name = brandName?.trim() || storeName;
+  const nav = String(links || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  return (
+    <header className="dm-header dm-mega-header">
+      <div className="dm-header-inner">
+        <nav className="dm-nav dm-mega-nav" aria-label="Departamentos">
+          {nav.map((label) => (
+            <a key={label} href="#produtos">
+              {label}
+            </a>
+          ))}
+        </nav>
+        <a href={`/loja/${storeSlug}`} className="dm-brand">
+          <span className="dm-brand-name">{name}</span>
+        </a>
+        {showSearch ? (
+          <div className="dm-mega-search" aria-hidden>
+            <span>Buscar produtos…</span>
+          </div>
+        ) : (
+          <span className="dm-mega-spacer" />
+        )}
+      </div>
+    </header>
+  );
+}
+
+export function MarqueeStrip({ text }: { text: string }) {
+  const chunk = text?.trim() || "Dropmai · Xnamai";
+  const line = Array.from({ length: 8 }, () => chunk).join(" · ");
+  return (
+    <div className="dm-marquee" aria-hidden>
+      <div className="dm-marquee-track">{line}</div>
+    </div>
+  );
+}
+
+export function PromoTiles({
+  leftTitle,
+  leftBody,
+  rightTitle,
+  rightBody,
+  leftImage,
+  rightImage,
+}: {
+  leftTitle: string;
+  leftBody: string;
+  rightTitle: string;
+  rightBody: string;
+  leftImage?: string;
+  rightImage?: string;
+}) {
+  return (
+    <section className="dm-promo-tiles">
+      {[
+        { title: leftTitle, body: leftBody, image: leftImage },
+        { title: rightTitle, body: rightBody, image: rightImage },
+      ].map((tile) => (
+        <a
+          key={tile.title}
+          href="#produtos"
+          className="dm-promo-tile"
+          style={
+            tile.image
+              ? {
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)), url(${tile.image})`,
+                }
+              : undefined
+          }
+        >
+          <strong>{tile.title}</strong>
+          {tile.body ? <span>{tile.body}</span> : null}
+        </a>
+      ))}
+    </section>
+  );
+}
+
+export function TrustRow({ items }: { items: string }) {
+  const list = String(items || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  if (!list.length) return null;
+  return (
+    <ul className="dm-trust-row" aria-label="Confiança">
+      {list.map((item) => (
+        <li key={item}>
+          <strong>{item.split(":")[0]?.trim() || item}</strong>
+          {item.includes(":") ? (
+            <span>{item.split(":").slice(1).join(":").trim()}</span>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function FaqSection({
+  title,
+  items,
+}: {
+  title: string;
+  items: string;
+}) {
+  const list = String(items || "")
+    .split("||")
+    .map((pair) => {
+      const [q, a] = pair.split("|").map((s) => s.trim());
+      return q ? { q, a: a || "" } : null;
+    })
+    .filter(Boolean) as Array<{ q: string; a: string }>;
+  if (!list.length) return null;
+  return (
+    <section className="dm-faq">
+      <h2>{title || "Perguntas frequentes"}</h2>
+      <div className="dm-faq-list">
+        {list.map((item) => (
+          <details key={item.q} className="dm-faq-item">
+            <summary>{item.q}</summary>
+            {item.a ? <p>{item.a}</p> : null}
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function Testimonials({
+  title,
+  quotes,
+}: {
+  title: string;
+  quotes: string;
+}) {
+  const list = String(quotes || "")
+    .split("||")
+    .map((pair) => {
+      const [quote, author] = pair.split("|").map((s) => s.trim());
+      return quote ? { quote, author: author || "Cliente" } : null;
+    })
+    .filter(Boolean) as Array<{ quote: string; author: string }>;
+  if (!list.length) return null;
+  return (
+    <section className="dm-testimonials">
+      <h2>{title || "Quem comprou"}</h2>
+      <div className="dm-testimonials-grid">
+        {list.map((item) => (
+          <blockquote key={item.quote} className="dm-testimonial">
+            <p>“{item.quote}”</p>
+            <cite>{item.author}</cite>
+          </blockquote>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function FeaturedRow({
+  title,
+  limit,
+}: {
+  title: string;
+  limit: number;
+}) {
+  return (
+    <div className="dm-featured-row">
+      <FeaturedProducts title={title} limit={limit || 4} dense={false} />
+    </div>
+  );
+}
+
 export function RichText({
   heading,
   body,
