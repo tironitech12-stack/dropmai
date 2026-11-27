@@ -115,4 +115,6 @@ export type ProductRow = {
   active?: boolean;
   categoryName?: string | null;
   publishedOnSite?: boolean;
+  /** Optional storefront/preview image (public URL or /public path). */
+  imageUrl?: string | null;
 };

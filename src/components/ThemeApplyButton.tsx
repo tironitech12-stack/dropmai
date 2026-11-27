@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
@@ -8,9 +9,16 @@ type Props = {
   storeId: string;
   themeId: string;
   active?: boolean;
+  /** Show Pré-visualizar link (gallery cards). */
+  showPreview?: boolean;
 };
 
-export function ThemeApplyButton({ storeId, themeId, active }: Props) {
+export function ThemeApplyButton({
+  storeId,
+  themeId,
+  active,
+  showPreview = false,
+}: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +35,6 @@ export function ThemeApplyButton({ storeId, themeId, active }: Props) {
       } catch (primaryErr) {
         const msg =
           primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
-        // Older Render builds 404 on /theme/apply — try ThemesController path,
-        // then PATCH /theme.
         if (/not found|404|cannot post/i.test(msg)) {
           try {
             await apiFetch(`/api/v1/themes/${themeId}/apply`, {
@@ -61,6 +67,16 @@ export function ThemeApplyButton({ storeId, themeId, active }: Props) {
 
   return (
     <div className="dm-theme-card-actions">
+      {showPreview ? (
+        <Link
+          href={`/loja/preview/${themeId}?storeId=${encodeURIComponent(storeId)}`}
+          className="btn btn-sm btn-secondary"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Pré-visualizar
+        </Link>
+      ) : null}
       <button
         type="button"
         className={`btn btn-sm ${active ? "btn-secondary" : "btn-primary"}`}

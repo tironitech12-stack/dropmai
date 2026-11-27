@@ -1,6 +1,10 @@
 import type { Data } from "@puckeditor/core";
 import type { DropmaiPuckProps, DropmaiRootProps } from "@/puck/config";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
+import {
+  themeHeroImage,
+  themeTileImages,
+} from "@/lib/theme-preview-assets";
 import type { ThemeSettings } from "@/lib/themes";
 import { isDenseTheme } from "@/lib/themes";
 import { thematicById } from "@/lib/thematic-presets";
@@ -75,6 +79,9 @@ export function buildDefaultPuckData(
     },
   });
 
+  const heroImage = themeHeroImage(themeId);
+  const tileImgs = themeTileImages(themeId, 4);
+
   content.push({
     type: "HeroSection",
     props: {
@@ -94,6 +101,7 @@ export function buildDefaultPuckData(
       ctaLabel: String(hero?.props.ctaLabel || thematic?.ctaLabel || "Ver produtos"),
       ctaHref: String(hero?.props.ctaHref || "#produtos"),
       overlay: Boolean(thematic?.overlayHero),
+      imageUrl: String(hero?.props.imageUrl || heroImage),
     },
   });
 
@@ -104,6 +112,7 @@ export function buildDefaultPuckData(
         id: uid("tiles"),
         title: "Categorias Xnamai",
         tiles: thematic.tiles,
+        imageUrls: tileImgs.join("|"),
       },
     });
   }
@@ -118,6 +127,7 @@ export function buildDefaultPuckData(
         ctaLabel: thematic.ctaLabel,
         ctaHref: "#produtos",
         imageSide: "left",
+        imageUrl: tileImgs[0] || heroImage,
       },
     });
   }

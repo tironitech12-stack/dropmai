@@ -28,6 +28,7 @@ export type DropmaiPuckProps = {
     ctaLabel: string;
     ctaHref: string;
     overlay: boolean;
+    imageUrl: string;
   };
   FeaturedProducts: { title: string; limit: number; dense: boolean };
   RichText: { heading: string; body: string };
@@ -37,8 +38,9 @@ export type DropmaiPuckProps = {
     ctaLabel: string;
     ctaHref: string;
     imageSide: "left" | "right";
+    imageUrl: string;
   };
-  CollectionTiles: { title: string; tiles: string };
+  CollectionTiles: { title: string; tiles: string; imageUrls: string };
   ShopTheLook: { title: string; caption: string };
   StoreFooter: { text: string };
 };
@@ -242,6 +244,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
             { label: "Sim", value: true },
           ],
         },
+        imageUrl: { type: "text", label: "Imagem de fundo (URL)" },
       },
       defaultProps: {
         eyebrow: "Loja Dropmai",
@@ -250,6 +253,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         ctaLabel: "Ver produtos",
         ctaHref: "#produtos",
         overlay: false,
+        imageUrl: "",
       },
       render: (props) => <HeroSection {...props} />,
     },
@@ -301,6 +305,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
             { label: "Direita", value: "right" },
           ],
         },
+        imageUrl: { type: "text", label: "URL da imagem" },
       },
       defaultProps: {
         heading: "Destaque da coleção",
@@ -308,6 +313,7 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         ctaLabel: "Ver produtos",
         ctaHref: "#produtos",
         imageSide: "left",
+        imageUrl: "",
       },
       render: (props) => <ImageWithText {...props} />,
     },
@@ -319,10 +325,15 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
           type: "textarea",
           label: "Tiles (separados por |)",
         },
+        imageUrls: {
+          type: "textarea",
+          label: "Imagens (URLs separadas por |)",
+        },
       },
       defaultProps: {
         title: "Categorias",
         tiles: "Celular | Casa | Beleza | Energia",
+        imageUrls: "",
       },
       render: (props) => <CollectionTiles {...props} />,
     },

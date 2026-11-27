@@ -162,6 +162,7 @@ export default async function LojaVirtualPage() {
                         storeId={primary.id}
                         themeId={theme.id}
                         active={active}
+                        showPreview
                       />
                     </div>
                   </article>

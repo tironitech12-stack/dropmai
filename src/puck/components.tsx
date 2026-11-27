@@ -78,6 +78,7 @@ export function HeroSection({
   ctaLabel,
   ctaHref,
   overlay,
+  imageUrl,
 }: {
   eyebrow: string;
   title: string;
@@ -85,9 +86,20 @@ export function HeroSection({
   ctaLabel: string;
   ctaHref: string;
   overlay?: boolean;
+  imageUrl?: string;
 }) {
+  const photo = Boolean(imageUrl?.trim());
   return (
-    <section className={`dm-hero${overlay ? " is-overlay" : ""}`}>
+    <section
+      className={`dm-hero${overlay || photo ? " is-overlay" : ""}${photo ? " is-photo" : ""}`}
+      style={
+        photo
+          ? {
+              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.55)), url(${imageUrl})`,
+            }
+          : undefined
+      }
+    >
       <div className="dm-hero-copy">
         {eyebrow ? <p className="dm-eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
@@ -122,6 +134,7 @@ export function FeaturedProducts({
           sku: `SKU-00${i + 1}`,
           sellPrice: 49.9,
           stock: 10,
+          imageUrl: `/tile-${(i % 6) + 1}.jpg`,
         }));
 
   return (
@@ -135,20 +148,32 @@ export function FeaturedProducts({
         </p>
       </div>
       <div className={`dm-grid${dense ? " is-dense" : ""}`}>
-        {demo.map((p) => (
-          <article key={p.id} className="dm-card">
-            <div className="dm-card-body">
-              <strong>{p.title}</strong>
-              <span className="dm-sku">{"sku" in p ? p.sku : p.id}</span>
-            </div>
-            <div className="dm-card-meta">
-              <span className="dm-price">{formatBRL(p.sellPrice)}</span>
-              <span className="dm-stock">
-                {p.stock > 0 ? "Em estoque" : "Sob consulta"}
-              </span>
-            </div>
-          </article>
-        ))}
+        {demo.map((p) => {
+          const img =
+            "imageUrl" in p && typeof p.imageUrl === "string" && p.imageUrl
+              ? p.imageUrl
+              : null;
+          return (
+            <article key={p.id} className="dm-card">
+              {img ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="dm-card-img" src={img} alt="" />
+              ) : (
+                <div className="dm-card-img is-placeholder" aria-hidden />
+              )}
+              <div className="dm-card-body">
+                <strong>{p.title}</strong>
+                <span className="dm-sku">{"sku" in p ? p.sku : p.id}</span>
+              </div>
+              <div className="dm-card-meta">
+                <span className="dm-price">{formatBRL(p.sellPrice)}</span>
+                <span className="dm-stock">
+                  {p.stock > 0 ? "Em estoque" : "Sob consulta"}
+                </span>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -192,18 +217,28 @@ export function ImageWithText({
   ctaLabel,
   ctaHref,
   imageSide,
+  imageUrl,
 }: {
   heading: string;
   body: string;
   ctaLabel: string;
   ctaHref: string;
   imageSide: "left" | "right";
+  imageUrl?: string;
 }) {
   return (
     <section
       className={`dm-iwt dm-iwt--${imageSide === "left" ? "left" : "right"}`}
     >
-      <div className="dm-iwt-media" aria-hidden />
+      <div
+        className="dm-iwt-media"
+        aria-hidden
+        style={
+          imageUrl
+            ? { backgroundImage: `url(${imageUrl})` }
+            : undefined
+        }
+      />
       <div className="dm-iwt-copy">
         {heading ? <h2>{heading}</h2> : null}
         {body ? <p>{body}</p> : null}
@@ -220,22 +255,39 @@ export function ImageWithText({
 export function CollectionTiles({
   title,
   tiles,
+  imageUrls,
 }: {
   title: string;
   tiles: string;
+  imageUrls?: string;
 }) {
   const items = String(tiles || "")
     .split("|")
     .map((s) => s.trim())
     .filter(Boolean)
     .slice(0, 6);
+  const imgs = String(imageUrls || "")
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
   if (!items.length) return null;
   return (
     <section className="dm-tiles">
       {title ? <h2 className="dm-tiles-title">{title}</h2> : null}
       <div className="dm-tiles-grid">
-        {items.map((label) => (
-          <a key={label} className="dm-tile" href="#produtos">
+        {items.map((label, i) => (
+          <a
+            key={label}
+            className="dm-tile is-photo"
+            href="#produtos"
+            style={
+              imgs[i]
+                ? { backgroundImage: `url(${imgs[i]})` }
+                : {
+                    backgroundImage: `url(/tile-${(i % 6) + 1}.jpg)`,
+                  }
+            }
+          >
             <span>{label}</span>
           </a>
         ))}
@@ -262,6 +314,9 @@ export function ShopTheLook({
       y: [38, 28, 62][i] ?? 50,
     }));
 
+  const stageImg =
+    products.find((p) => p.imageUrl)?.imageUrl || "/hero-2.jpg";
+
   return (
     <section className="dm-stl">
       <div className="dm-stl-head">
@@ -269,7 +324,11 @@ export function ShopTheLook({
         {caption ? <p>{caption}</p> : null}
       </div>
       <div className="dm-stl-stage">
-        <div className="dm-stl-canvas" aria-hidden>
+        <div
+          className="dm-stl-canvas is-photo"
+          aria-hidden
+          style={{ backgroundImage: `url(${stageImg})` }}
+        >
           {pins.map((pin) => (
             <span
               key={pin.id}
