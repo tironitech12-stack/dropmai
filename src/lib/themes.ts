@@ -1,3 +1,5 @@
+import { thematicMetaList } from "@/lib/thematic-presets";
+
 export type ThemeSectionType =
   | "announcement"
   | "hero"
@@ -45,7 +47,7 @@ export type ThemeDefinition = {
   previewAccent2?: string;
 };
 
-export const THEME_META: ThemeDefinition[] = [
+const BASE_THEME_META: ThemeDefinition[] = [
   {
     id: "vitrine",
     name: "Vitrine",
@@ -94,30 +96,11 @@ export const THEME_META: ThemeDefinition[] = [
     previewAccent: "#ea580c",
     previewAccent2: "#fbbf24",
   },
-  {
-    id: "impeto",
-    name: "Ímpeto",
-    tagline: "Beleza e lifestyle bold — hero overlay e marca no centro.",
-    free: true,
-    previewAccent: "#111111",
-    previewAccent2: "#f5f5f5",
-  },
-  {
-    id: "trilha",
-    name: "Trilha",
-    tagline: "Outdoor e performance — cards amplos e foto em evidência.",
-    free: true,
-    previewAccent: "#171717",
-    previewAccent2: "#dc2626",
-  },
-  {
-    id: "prateleira",
-    name: "Prateleira",
-    tagline: "Catálogo grande — benefícios, cupom e grade densa.",
-    free: true,
-    previewAccent: "#f97316",
-    previewAccent2: "#0f172a",
-  },
+];
+
+export const THEME_META: ThemeDefinition[] = [
+  ...BASE_THEME_META,
+  ...thematicMetaList(),
 ];
 
 export function themeMeta(themeId: string) {
@@ -144,7 +127,11 @@ export function themeCssVars(
 }
 
 export function isDenseTheme(themeId: string) {
-  return themeId === "catalogo" || themeId === "prateleira";
+  return (
+    themeId === "catalogo" ||
+    themeId === "prateleira" ||
+    themeId === "deposito"
+  );
 }
 
 export function isMinimalTheme(themeId: string) {

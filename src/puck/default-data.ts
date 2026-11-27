@@ -3,6 +3,7 @@ import type { DropmaiPuckProps, DropmaiRootProps } from "@/puck/config";
 import { buildDefaultSettingsClient } from "@/lib/theme-defaults";
 import type { ThemeSettings } from "@/lib/themes";
 import { isDenseTheme } from "@/lib/themes";
+import { thematicById } from "@/lib/thematic-presets";
 
 export type DropmaiPuckData = Data<DropmaiPuckProps, DropmaiRootProps>;
 
@@ -27,10 +28,8 @@ export function buildDefaultPuckData(
     (s) => s.type === "featured_products",
   );
   const footer = settings?.home.sections.find((s) => s.type === "footer");
-  const dense = isDenseTheme(themeId);
-  const isImpeto = themeId === "impeto";
-  const isTrilha = themeId === "trilha";
-  const isPrateleira = themeId === "prateleira";
+  const thematic = thematicById(themeId);
+  const dense = isDenseTheme(themeId) || Boolean(thematic?.dense);
 
   const content: DropmaiPuckData["content"] = [];
 
@@ -49,21 +48,20 @@ export function buildDefaultPuckData(
     });
   }
 
-  if (isPrateleira) {
+  if (thematic?.benefits) {
     content.push({
       type: "BenefitStrip",
-      props: {
-        id: uid("ben"),
-        items:
-          "Frete sob demanda | Ajuda na compra | Troca facilitada | Aberto todo dia",
-      },
+      props: { id: uid("ben"), items: thematic.benefits },
     });
+  }
+
+  if (thematic?.promoText) {
     content.push({
       type: "PromoBar",
       props: {
         id: uid("promo"),
-        text: "Flash da semana — copie o cupom",
-        code: "DROPMAI10",
+        text: thematic.promoText,
+        code: thematic.promoCode || "",
       },
     });
   }
@@ -93,19 +91,44 @@ export function buildDefaultPuckData(
             .subtitle ||
           "",
       ),
-      ctaLabel: String(hero?.props.ctaLabel || "Ver produtos"),
+      ctaLabel: String(hero?.props.ctaLabel || thematic?.ctaLabel || "Ver produtos"),
       ctaHref: String(hero?.props.ctaHref || "#produtos"),
-      overlay: isImpeto,
+      overlay: Boolean(thematic?.overlayHero),
     },
   });
 
-  if (isTrilha) {
+  if (thematic?.tiles) {
+    content.push({
+      type: "CollectionTiles",
+      props: {
+        id: uid("tiles"),
+        title: "Categorias Xnamai",
+        tiles: thematic.tiles,
+      },
+    });
+  }
+
+  if (thematic?.iwtHeading) {
+    content.push({
+      type: "ImageWithText",
+      props: {
+        id: uid("iwt"),
+        heading: thematic.iwtHeading,
+        body: thematic.iwtBody || "",
+        ctaLabel: thematic.ctaLabel,
+        ctaHref: "#produtos",
+        imageSide: "left",
+      },
+    });
+  }
+
+  if (thematic?.richHeading) {
     content.push({
       type: "RichText",
       props: {
-        id: uid("feat-copy"),
-        heading: "Em movimento",
-        body: "Destaques com cards amplos — ideal para outdoor, bike e performance.",
+        id: uid("rich"),
+        heading: thematic.richHeading,
+        body: thematic.richBody || "",
       },
     });
   }
@@ -114,11 +137,27 @@ export function buildDefaultPuckData(
     type: "FeaturedProducts",
     props: {
       id: uid("feat"),
-      title: String(featured?.props.title || "Destaques"),
-      limit: Number(featured?.props.limit ?? (isPrateleira ? 24 : 12)) || 12,
-      dense: dense || isPrateleira,
+      title: String(
+        featured?.props.title || thematic?.featuredTitle || "Destaques",
+      ),
+      limit:
+        Number(
+          featured?.props.limit ?? thematic?.featuredLimit ?? 12,
+        ) || 12,
+      dense,
     },
   });
+
+  if (thematic?.stlTitle) {
+    content.push({
+      type: "ShopTheLook",
+      props: {
+        id: uid("stl"),
+        title: thematic.stlTitle,
+        caption: thematic.stlCaption || "",
+      },
+    });
+  }
 
   content.push({
     type: "StoreFooter",
@@ -126,6 +165,7 @@ export function buildDefaultPuckData(
       id: uid("ftr"),
       text: String(
         footer?.props.text ||
+          thematic?.footerText ||
           fallback.home.sections.find((s) => s.type === "footer")?.props
             .text ||
           "Loja powered by Dropmai",

@@ -5,10 +5,13 @@ import type { Config } from "@puckeditor/core";
 import {
   AnnouncementBar,
   BenefitStrip,
+  CollectionTiles,
   FeaturedProducts,
   HeroSection,
+  ImageWithText,
   PromoBar,
   RichText,
+  ShopTheLook,
   StoreFooter,
   StoreHeader,
 } from "@/puck/components";
@@ -28,6 +31,15 @@ export type DropmaiPuckProps = {
   };
   FeaturedProducts: { title: string; limit: number; dense: boolean };
   RichText: { heading: string; body: string };
+  ImageWithText: {
+    heading: string;
+    body: string;
+    ctaLabel: string;
+    ctaHref: string;
+    imageSide: "left" | "right";
+  };
+  CollectionTiles: { title: string; tiles: string };
+  ShopTheLook: { title: string; caption: string };
   StoreFooter: { text: string };
 };
 
@@ -148,7 +160,14 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
     },
     content: {
       title: "Conteúdo",
-      components: ["HeroSection", "FeaturedProducts", "RichText"],
+      components: [
+        "HeroSection",
+        "FeaturedProducts",
+        "RichText",
+        "ImageWithText",
+        "CollectionTiles",
+        "ShopTheLook",
+      ],
     },
   },
   components: {
@@ -266,6 +285,58 @@ export const dropmaiPuckConfig: Config<DropmaiPuckProps, DropmaiRootProps> = {
         body: "Conte a história da sua marca e como funciona o envio.",
       },
       render: (props) => <RichText {...props} />,
+    },
+    ImageWithText: {
+      label: "Imagem + texto",
+      fields: {
+        heading: { type: "text", label: "Título" },
+        body: { type: "textarea", label: "Corpo" },
+        ctaLabel: { type: "text", label: "Botão" },
+        ctaHref: { type: "text", label: "Link" },
+        imageSide: {
+          type: "radio",
+          label: "Imagem",
+          options: [
+            { label: "Esquerda", value: "left" },
+            { label: "Direita", value: "right" },
+          ],
+        },
+      },
+      defaultProps: {
+        heading: "Destaque da coleção",
+        body: "Conte a história do produto Xnamai com a sua marca.",
+        ctaLabel: "Ver produtos",
+        ctaHref: "#produtos",
+        imageSide: "left",
+      },
+      render: (props) => <ImageWithText {...props} />,
+    },
+    CollectionTiles: {
+      label: "Tiles de coleção",
+      fields: {
+        title: { type: "text", label: "Título" },
+        tiles: {
+          type: "textarea",
+          label: "Tiles (separados por |)",
+        },
+      },
+      defaultProps: {
+        title: "Categorias",
+        tiles: "Celular | Casa | Beleza | Energia",
+      },
+      render: (props) => <CollectionTiles {...props} />,
+    },
+    ShopTheLook: {
+      label: "Shop the look",
+      fields: {
+        title: { type: "text", label: "Título" },
+        caption: { type: "textarea", label: "Legenda" },
+      },
+      defaultProps: {
+        title: "Monte o look",
+        caption: "Pins nos produtos publicados da sua loja.",
+      },
+      render: (props) => <ShopTheLook {...props} />,
     },
     StoreFooter: {
       label: "Rodapé",
