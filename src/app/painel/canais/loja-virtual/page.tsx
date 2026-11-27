@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { ThemeApplyButton } from "@/components/ThemeApplyButton";
+import { ThemeLibraryActivateButton } from "@/components/ThemeLibraryActivateButton";
 import { ThemeThumb } from "@/components/ThemeThumb";
 import { type StoreSummary } from "@/lib/api";
 import { apiFetchServer } from "@/lib/api-server";
-import { THEME_META, themeMeta } from "@/lib/themes";
+import {
+  resolveAddedThemeIds,
+  THEME_META,
+  themeMeta,
+  type ThemeDefinition,
+} from "@/lib/themes";
 
 export default async function LojaVirtualPage() {
   let stores: StoreSummary[] = [];
   let themes = THEME_META;
 
-  // Parallel stores + themes (layout already fetched stores once; this keeps
-  // page self-contained but no longer serializes the two calls).
   const [storesResult, themesResult] = await Promise.allSettled([
     apiFetchServer<{ stores: StoreSummary[] }>("/api/v1/stores"),
     apiFetchServer<{
@@ -43,7 +47,14 @@ export default async function LojaVirtualPage() {
   }
 
   const primary = stores[0];
-  const activeTheme = themeMeta(primary?.themeId || "vitrine");
+  const activeId = primary?.themeId || "vitrine";
+  const activeTheme = themeMeta(activeId);
+  const addedIds = primary
+    ? resolveAddedThemeIds(primary.themeId, primary.themeSettings)
+    : [];
+  const libraryThemes: ThemeDefinition[] = addedIds.map((id) => themeMeta(id));
+  const otherLibrary = libraryThemes.filter((t) => t.id !== activeId);
+  const addedCount = libraryThemes.length;
 
   return (
     <main className="panel-page">
@@ -93,12 +104,27 @@ export default async function LojaVirtualPage() {
                 </code>
               </p>
               <p className="panel-muted-note">{activeTheme.tagline}</p>
+              <p className="dm-theme-lib-count">
+                <strong>{addedCount}</strong>{" "}
+                {addedCount === 1
+                  ? "tema adicionado"
+                  : "temas adicionados"}{" "}
+                nesta loja
+              </p>
               <div className="panel-form-actions">
                 <Link
                   href={`/painel/lojas/${primary.id}/tema`}
                   className="btn btn-primary"
                 >
                   Editar tema
+                </Link>
+                <Link
+                  href={`/loja/preview/${activeId}?storeId=${encodeURIComponent(primary.id)}`}
+                  className="btn btn-secondary"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Pré-visualizar
                 </Link>
                 <Link
                   href={`/painel/lojas/${primary.id}/produtos`}
@@ -116,20 +142,85 @@ export default async function LojaVirtualPage() {
                 </a>
               </div>
             </div>
-            <div
-              className="dm-active-theme-preview"
-              style={{
-                background: `linear-gradient(145deg, ${activeTheme.previewAccent}22, #fff 55%)`,
-                borderColor: `${activeTheme.previewAccent}55`,
-              }}
-            >
-              <div
-                className="dm-active-theme-swatch"
-                style={{ background: activeTheme.previewAccent }}
+            <div className="dm-active-theme-preview is-thumb">
+              <ThemeThumb
+                themeId={activeTheme.id}
+                name={activeTheme.name}
+                accent={activeTheme.previewAccent}
+                accent2={activeTheme.previewAccent2 || activeTheme.previewAccent}
               />
-              <strong>{activeTheme.name}</strong>
-              <span>Tema gratuito Dropmai</span>
+              <div className="dm-active-theme-preview-meta">
+                <strong>{activeTheme.name}</strong>
+                <span>Ativo agora · Dropmai</span>
+              </div>
             </div>
+          </section>
+
+          <section
+            className="panel-section dm-theme-library"
+            aria-labelledby="temas-loja"
+          >
+            <div className="panel-section-head">
+              <h2 id="temas-loja">Temas da loja</h2>
+              <p>
+                Biblioteca desta loja — ative outro tema ou edite o layout no
+                Puck.
+              </p>
+            </div>
+            <div className="dm-theme-library-rail">
+              {libraryThemes.map((theme) => {
+                const isActive = theme.id === activeId;
+                return (
+                  <article
+                    key={theme.id}
+                    className={`dm-theme-lib-card${isActive ? " is-active" : ""}`}
+                  >
+                    <div className="dm-theme-lib-preview">
+                      <ThemeThumb
+                        themeId={theme.id}
+                        name={theme.name}
+                        accent={theme.previewAccent}
+                        accent2={theme.previewAccent2 || theme.previewAccent}
+                      />
+                    </div>
+                    <div className="dm-theme-lib-body">
+                      <strong>{theme.name}</strong>
+                      <span className="xn-meta">
+                        {isActive ? "Tema ativo" : "Na biblioteca"}
+                      </span>
+                      <div className="dm-theme-lib-row">
+                        <ThemeLibraryActivateButton
+                          storeId={primary.id}
+                          themeId={theme.id}
+                          active={isActive}
+                        />
+                        <Link
+                          href={`/painel/lojas/${primary.id}/tema`}
+                          className="btn btn-sm btn-secondary"
+                        >
+                          Editar
+                        </Link>
+                        <Link
+                          href={`/loja/preview/${theme.id}?storeId=${encodeURIComponent(primary.id)}`}
+                          className="btn btn-sm btn-secondary"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Ver
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            {otherLibrary.length === 0 ? (
+              <p className="dm-theme-lib-empty">
+                Só o tema ativo está na biblioteca. Use{" "}
+                <strong>Adicionar</strong> em Descobrir temas para guardar
+                outros estilos nesta loja.
+              </p>
+            ) : null}
           </section>
 
           <section className="panel-section" aria-labelledby="descobrir-temas">
@@ -142,7 +233,8 @@ export default async function LojaVirtualPage() {
             </div>
             <div className="dm-theme-grid">
               {themes.map((theme) => {
-                const active = (primary.themeId || "vitrine") === theme.id;
+                const active = activeId === theme.id;
+                const inLibrary = addedIds.includes(theme.id);
                 const accent2 = theme.previewAccent2 || theme.previewAccent;
                 return (
                   <article key={theme.id} className="dm-theme-card">
@@ -156,12 +248,17 @@ export default async function LojaVirtualPage() {
                     </div>
                     <div className="dm-theme-card-body">
                       <strong>{theme.name}</strong>
-                      <span className="xn-meta">da Dropmai · Gratuito</span>
+                      <span className="xn-meta">
+                        {inLibrary
+                          ? "Na biblioteca · Gratuito"
+                          : "da Dropmai · Gratuito"}
+                      </span>
                       <p>{theme.tagline}</p>
                       <ThemeApplyButton
                         storeId={primary.id}
                         themeId={theme.id}
                         active={active}
+                        inLibrary={inLibrary}
                         showPreview
                       />
                     </div>

@@ -9,6 +9,8 @@ type Props = {
   storeId: string;
   themeId: string;
   active?: boolean;
+  /** Already in store library (not necessarily active). */
+  inLibrary?: boolean;
   /** Show Pré-visualizar link (gallery cards). */
   showPreview?: boolean;
 };
@@ -17,6 +19,7 @@ export function ThemeApplyButton({
   storeId,
   themeId,
   active,
+  inLibrary = false,
   showPreview = false,
 }: Props) {
   const router = useRouter();
@@ -83,7 +86,15 @@ export function ThemeApplyButton({
         disabled={loading || active}
         onClick={() => void apply()}
       >
-        {active ? "Tema ativo" : loading ? "Aplicando…" : "Adicionar"}
+        {active
+          ? "Tema ativo"
+          : loading
+            ? inLibrary
+              ? "Ativando…"
+              : "Aplicando…"
+            : inLibrary
+              ? "Ativar"
+              : "Adicionar"}
       </button>
       {error ? <span className="panel-alert">{error}</span> : null}
     </div>

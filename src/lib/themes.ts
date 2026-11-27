@@ -34,9 +34,25 @@ export type ThemeSettings = {
   home: {
     sections: ThemeSection[];
   };
+  /** Theme ids added to this store's library (active = store.themeId). */
+  addedThemeIds?: string[];
   /** Puck page JSON (sections/blocks). When present, storefront prefers it. */
   puck?: unknown;
 };
+
+/** Active theme + any previously added ids (deduped, active first). */
+export function resolveAddedThemeIds(
+  themeId: string | null | undefined,
+  settings?: ThemeSettings | null,
+): string[] {
+  const active = (themeId || "vitrine").trim() || "vitrine";
+  const fromSettings = Array.isArray(settings?.addedThemeIds)
+    ? settings!.addedThemeIds!
+        .map((id) => String(id || "").trim())
+        .filter(Boolean)
+    : [];
+  return [...new Set([active, ...fromSettings])];
+}
 
 export type ThemeDefinition = {
   id: string;
